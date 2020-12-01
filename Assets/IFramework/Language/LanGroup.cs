@@ -6,6 +6,7 @@
  *Description:    IFramework
  *History:        2018.11--
 *********************************************************************************/
+using IFramework.GUITool.Inspector;
 using System.Collections.Generic;
 using UnityEngine;
 namespace IFramework.Language
@@ -13,8 +14,9 @@ namespace IFramework.Language
     [CreateAssetMenu(fileName ="NewLanGoup",menuName = "IFramework/NewLanGoup")]
     public class LanGroup:ScriptableObject
 	{
+#if UNITY_EDITOR
         public const string assetPath = "Language/Editor/LanGroup.asset";
-
+#endif
         [ReadOnly] public List<LanPair> pairs = new List<LanPair>();
         [ReadOnly] public List<string> keys = new List<string>();
 

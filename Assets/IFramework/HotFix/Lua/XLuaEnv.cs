@@ -48,44 +48,44 @@ namespace IFramework.Hotfix.Lua
         private List<LuaTable> _tables;
         private static float _lastGCTime;
 
-        public static LuaTable gtable { get { return Instance._luaenv.Global; } }
+        public static LuaTable gtable { get { return instance._luaenv.Global; } }
         public static float gcInterval=1f;
         public static bool disposed { get; private set; }
         public static Action onDispose;
 
         public static LuaTable NewTable()
         {
-            LuaTable table = Instance._luaenv.NewTable();
-            Instance._tables.Add(table);
+            LuaTable table = instance._luaenv.NewTable();
+            instance._tables.Add(table);
             return table;
         }
         public static void AddLoader(IXLuaLoader loader)
         {
-           Instance. _luaenv.AddLoader(loader.load);
+            instance. _luaenv.AddLoader(loader.load);
         }
 
         public static LuaFunction LoadString(string chunk, string chunkName = "chunk", LuaTable env = null)
         {
-            return Instance._luaenv.LoadString(chunk, chunkName, env);
+            return instance._luaenv.LoadString(chunk, chunkName, env);
         }
         public static T LoadString<T>(string chunk, string chunkName = "chunk", LuaTable env = null)
         {
-            return Instance._luaenv.LoadString<T>(chunk, chunkName, env);
+            return instance._luaenv.LoadString<T>(chunk, chunkName, env);
         }
         public static T LoadString<T>(byte[] chunk, string chunkName = "chunk", LuaTable env = null)
         {
-            return Instance._luaenv.LoadString<T>(chunk, chunkName, env);
+            return instance._luaenv.LoadString<T>(chunk, chunkName, env);
         }
 
 
 
         public static object[] DoString(byte[] chunk, string chunkName = "chunk", LuaTable env = null)
         {
-            return Instance._luaenv.DoString(chunk, chunkName, env);
+            return instance._luaenv.DoString(chunk, chunkName, env);
         }
         public static object[] DoString(string chunk, string chunkName = "chunk", LuaTable env = null)
         {
-            return Instance._luaenv.DoString(chunk, chunkName, env);
+            return instance._luaenv.DoString(chunk, chunkName, env);
         }
 
 
@@ -105,7 +105,7 @@ namespace IFramework.Hotfix.Lua
 
         public static void FullGc()
         {
-            Instance._luaenv.FullGc();
+            instance._luaenv.FullGc();
         }
 
         protected override void OnSingletonInit()

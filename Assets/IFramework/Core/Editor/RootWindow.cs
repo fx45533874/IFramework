@@ -13,7 +13,7 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.Networking;
 using System.Collections.Generic;
-using IFramework.GUITool.HorizontalMenuToorbar;
+using IFramework.GUITool.ToorbarMenu;
 using System.Linq;
 #pragma warning disable
 namespace IFramework
@@ -1200,7 +1200,7 @@ namespace IFramework
             }
         }
 
-        class WindowCollection : IRectGUIDrawer, ILayoutGUIDrawer
+        class WindowCollection : IRectGUI, ILayoutGUI
         {
             public const string name = "Name";
             public const string dock = "Dock";
@@ -1210,7 +1210,7 @@ namespace IFramework
             public static Texture tx = EditorGUIUtility.IconContent("BuildSettings.Editor.Small").image;
 
             private string _search = "";
-            private SearchFieldDrawer _sear;
+            private SearchField _sear;
 
             private TableViewCalculator _table = new TableViewCalculator();
             private Vector2 _scroll;
@@ -1224,7 +1224,7 @@ namespace IFramework
             };
             public WindowCollection()
             {
-                _sear = new SearchFieldDrawer("", null, 0);
+                _sear = new SearchField("", null, 0);
                 _sear.onValueChange += (str) => { _search = str; };
             }
             public void OnGUI(Rect position)
@@ -1246,7 +1246,7 @@ namespace IFramework
                 for (int i = _table.firstVisibleRow; i < _table.lastVisibleRow + 1; i++)
                 {
                     int index = i;
-                    EditorWindowTool.EditorWindowItem window = fitterWindows[i];
+                    EditorWindowTool.Entity window = fitterWindows[i];
                     if (e.type == EventType.Repaint)
                     {
                         GUIStyle style = index % 2 == 0 ? Styles.entryBackEven : Styles.entryBackodd;
@@ -1291,7 +1291,7 @@ namespace IFramework
                                         var w = EditorWindowTool.FindOrCreate(windowName);
                                         if (w != null)
                                         {
-                                            _window.DockWindow(w, EditorWindowTool.DockPosition.Right);
+                                            _window.Dock(w, EditorWindowTool.DockType.Right);
                                             w.Focus();
                                         }
                                     }, dock)

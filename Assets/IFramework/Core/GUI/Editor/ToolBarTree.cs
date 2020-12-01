@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace IFramework.GUITool.HorizontalMenuToorbar
+namespace IFramework.GUITool.ToorbarMenu
 {
     class Styles
     {
@@ -20,8 +20,9 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
         public static GUIStyle tooltip = GUIStyles.Get("Tooltip");
         public static GUIStyle dropDown = GUIStyles.Get("ToolbarDropDown");
     }
-    public abstract class ToolbarNode : ILayoutGUIDrawer
+    public abstract class ToolbarNode : ILayoutGUI,IRectGUI
     {
+        public ToolBarTree tree;
         protected GUIContent content;
         protected float width;
         protected Func<bool> canshowFunc;
@@ -63,7 +64,17 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
-            this.Label("", GUILayout.Width(width));
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
+                this.Label("", GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Label("", GUILayout.Height(width));
+                    break;
+                default:
+                    break;
+            }
             if (panDel != null)
                 panDel(GUILayoutUtility.GetLastRect());
         }
@@ -74,7 +85,18 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
             this.Label(content, GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Label(content, GUILayout.Height(width));
+
+                    break;
+                default:
+                    break;
+            }
         }
     }
     class ToolBarToolTip : ToolbarNode
@@ -83,7 +105,18 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
             this.Label(content, Styles.tooltip, GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Label(content, Styles.tooltip, GUILayout.Height(width));
+
+                    break;
+                default:
+                    break;
+            }
         }
     }
     class ToolBarSearchField : ToolbarNode
@@ -93,7 +126,7 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
         public ToolBarSearchField(Action<string> onValueChange, string value, int width=100 ,Func<bool> canshow=null) : base(null, width, canshow) {
 
             this.onValueChange = onValueChange;
-            s = new SearchFieldDrawer("", null, 0);
+            s = new SearchField("", null, 0);
 
             s.onValueChange += (str) => {
                 if (this.onValueChange != null)
@@ -102,10 +135,20 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
             };
         }
 
-        private SearchFieldDrawer s;
+        private SearchField s;
         public override void OnGUI()
         {
-            this.Label("", GUILayout.Width(width));
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
+                    this.Label("", GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Label("", GUILayout.Height(width));
+                    break;
+                default:
+                    break;
+            }
             s.OnGUI(GUILayoutUtility.GetLastRect());
         }
     }
@@ -116,9 +159,19 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
-            this.Label(string.Empty, GUILayout.Width(width));
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
+                    this.Label("", GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Label("", GUILayout.Height(width));
+                    break;
+                default:
+                    break;
+            }
             Rect r = GUILayoutUtility.GetLastRect();
-            this.GetRectDrawer().Button(() => { if (onClick != null) onClick(r); }, r, content, Styles.toolbarbutton);
+            this.Button(() => { if (onClick != null) onClick(r); }, r, content, Styles.toolbarbutton);
         }
     }
     class ToolBarDropDownButton : ToolbarNode
@@ -128,9 +181,19 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
-            GUILayout.Label(string.Empty, GUILayout.Width(width));
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
+                    this.Label("", GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Label("", GUILayout.Height(width));
+                    break;
+                default:
+                    break;
+            }
             Rect r = GUILayoutUtility.GetLastRect();
-            this.GetRectDrawer().Button(() => { if (onClick != null) onClick(r); }, r, content, Styles.dropDown);
+            this.Button(() => { if (onClick != null) onClick(r); }, r, content, Styles.dropDown);
         }
     }
     class ToolBarToggle : ToolbarNode
@@ -146,9 +209,18 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
-
-            bool val = value;
-            this.Toggle(ref val, content, Styles.toolbarbutton, GUILayout.Width(width));
+                    bool val = value;
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
+                    this.Toggle(ref val, content, Styles.toolbarbutton, GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    this.Toggle(ref val, content, Styles.toolbarbutton, GUILayout.Height(width));
+                    break;
+                default:
+                    break;
+            }
             if (val != value)
             {
                 value = val;
@@ -173,7 +245,18 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
 
         public override void OnGUI()
         {
-            int tmp = EditorGUILayout.Popup(value, ops, Styles.dropDown, GUILayout.Width(width));
+            int tmp = 0;
+            switch (tree.type)
+            {
+                case BarType.Horzontal:
+                    tmp = EditorGUILayout.Popup(value, ops, Styles.dropDown, GUILayout.Width(width));
+                    break;
+                case BarType.Vertical:
+                    tmp = EditorGUILayout.Popup(value, ops, Styles.dropDown, GUILayout.Height(width));
+                    break;
+                default:
+                    break;
+            }
             if (tmp != value)
             {
                 value = tmp;
@@ -184,28 +267,52 @@ namespace IFramework.GUITool.HorizontalMenuToorbar
             }
         }
     }
-    public class ToolBarTree
+    public enum BarType { Horzontal,Vertical}
+    public class ToolBarTree:GUIBase
     {
-        private List<ToolbarNode> Nodes = new List<ToolbarNode>();
-        public void OnGUI(Rect position)
+        public BarType type = BarType.Horzontal;
+        private List<ToolbarNode> _nodes = new List<ToolbarNode>();
+        public override void OnGUI(Rect position)
         {
             Styles.toolBar.fixedHeight = position.height;
             GUILayout.BeginArea(position);
-            GUILayout.BeginHorizontal(Styles.toolBar, GUILayout.Width(position.width));
-            Nodes.ForEach((n) =>
+            switch (type)
             {
-                if (n.canshow)
-                {
-                    n.OnGUI();
-                }
-            });
-            GUILayout.EndHorizontal();
+                case BarType.Horzontal:
+                    GUILayout.BeginHorizontal(Styles.toolBar, GUILayout.Width(position.width));
+                    _nodes.ForEach((n) =>
+                    {
+                        if (n.canshow)
+                        {
+                            n.OnGUI();
+                        }
+                    });
+                    GUILayout.EndHorizontal();
+                    break;
+                case BarType.Vertical:
+                    GUILayout.BeginVertical(Styles.toolBar, GUILayout.Width(position.width));
+                    _nodes.ForEach((n) =>
+                    {
+                        if (n.canshow)
+                        {
+                            n.OnGUI();
+                        }
+                    });
+                    GUILayout.EndVertical();
+                    break;
+                default:
+                    break;
+            }
             GUILayout.EndArea();
         }
-
+        protected override void OnDispose()
+        {
+            _nodes.Clear();
+        }
         public ToolBarTree DockNode(ToolbarNode node)
         {
-            Nodes.Add(node);
+            node.tree = this;
+            _nodes.Add(node);
             return this;
         }
     }

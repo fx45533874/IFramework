@@ -93,5 +93,10 @@ namespace IFramework.UI
         {
             _moudule.Dispose();
         }
+
+        public void Update()
+        {
+            _moudule.Update();
+        }
     }
 }

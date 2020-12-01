@@ -9,14 +9,14 @@
 using System.Xml;
 using IFramework;
 using IFramework.GUITool;
-using IFramework.GUITool.HorizontalMenuToorbar;
+using IFramework.GUITool.ToorbarMenu;
 using UnityEditor;
 using UnityEngine;
 
 namespace IFramework_Demo
 {
     [EditorWindowCache]
-    public partial class SubWinExample: EditorWindow,ILayoutGUIDrawer
+    public partial class SubWinExample: EditorWindow,ILayoutGUI
     {
         [SerializeField]
         private string tmpLayout;
@@ -142,7 +142,7 @@ namespace IFramework_Demo
             Event.current.Use();
         }
 
-        private class LayoutSavePop : EditorWindow, ILayoutGUIDrawer
+        private class LayoutSavePop : EditorWindow, ILayoutGUI
         {
             public SubWinTree Tree;
             public XmlElement element;
@@ -167,7 +167,7 @@ namespace IFramework_Demo
                     },"Save");
             }
         }
-        private class LayoutEditPop : EditorWindow, ILayoutGUIDrawer
+        private class LayoutEditPop : EditorWindow, ILayoutGUI
         {
             public XmlElement root;
             public string path;

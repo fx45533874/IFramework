@@ -15,7 +15,7 @@ using System;
 using System.Text;
 using IFramework.Serialization;
 using IFramework.GUITool;
-using IFramework.GUITool.HorizontalMenuToorbar;
+using IFramework.GUITool.ToorbarMenu;
 using IFramework.Serialization.DataTable;
 namespace IFramework.Language
 {
@@ -68,7 +68,7 @@ namespace IFramework.Language
         }
         private const string CreateViewNmae = "CreateView";
         private const string Group = "Group";
-        private CreateView createView = new CreateView();
+        private static CreateView createView = new CreateView();
         private GroupView group = new GroupView();
 
         [SerializeField]
@@ -79,10 +79,10 @@ namespace IFramework.Language
         private ToolBarTree ToolBarTree;
 
 
-        private abstract class LanwindowItem : ILayoutGUIDrawer, IRectGUIDrawer
+        private abstract class LanwindowItem : ILayoutGUI, IRectGUI
         {
             public static LanWindow window;
-            protected Rect position;
+            public Rect position;
 
             protected float TitleHeight { get { return Styles.Title.CalcHeight(titleContent, position.width); } }
             protected float smallBtnSize = 20;
@@ -275,11 +275,11 @@ namespace IFramework.Language
         }
         private void WriteXml(string path)
         {
-            path.WriteText(Xml.ToXmlString(_pairs), Encoding.UTF8);
+            path.WriteText(Xml.ToXml(_pairs), Encoding.UTF8);
         }
         private void ReadXml(string path)
         {
-            List<LanPair> ps = Xml.ToObject<List<LanPair>>(path.ReadText(Encoding.UTF8))
+            List<LanPair> ps = Xml.FromXml<List<LanPair>>(path.ReadText(Encoding.UTF8))
                 .Distinct()
                 .ToList().FindAll((p) => { return !string.IsNullOrEmpty(p.key) && !string.IsNullOrEmpty(p.value); });
             AddLanPairs(ps);
@@ -308,7 +308,7 @@ namespace IFramework.Language
         }
         private void ReadCsv(string path)
         {
-            DataReader dw = new DataReader(new StreamReader(path, System.Text.Encoding.UTF8), new DataRow(), new DataExplainer());
+            var dw = DataTableTool.CreateReader(new StreamReader(path, System.Text.Encoding.UTF8), new DataRow(), new DataExplainer());
             var pairs = dw.Get<LanPair>().Distinct()
                  .ToList().FindAll((p) => { return !string.IsNullOrEmpty(p.key) && !string.IsNullOrEmpty(p.value); });
             dw.Dispose();
@@ -322,7 +322,9 @@ namespace IFramework.Language
         }
         private void WriteScriptableObject(string path)
         {
-            var g = AssetDatabase.LoadAssetAtPath<LanGroup>(path.ToAssetsPath());
+            if (!File.Exists(path))
+                EditorTools.ScriptableObjectTool.Create<LanGroup>(path.ToAssetsPath());
+            var g = EditorTools.ScriptableObjectTool.Load<LanGroup>(path.ToAssetsPath());
             if (g == null) return;
             g.pairs.AddRange(_pairs);
             g.pairs.Distinct();
@@ -331,7 +333,7 @@ namespace IFramework.Language
 
         private void WriteCsv(string path)
         {
-            DataWriter w = new DataWriter(new System.IO.StreamWriter(path, false),
+            var w = DataTableTool.CreateWriter(new StreamWriter(path, false),
                            new DataRow(),
                            new DataExplainer());
             w.Write(_pairs);
@@ -371,7 +373,7 @@ namespace IFramework.Language
         {
             public CreateView()
             {
-                searchField = new SearchFieldDrawer("", null, 0);
+                searchField = new SearchField("", null, 0);
 
                 searchField.onValueChange += (str) => {
                     keySearchStr = str;
@@ -405,7 +407,7 @@ namespace IFramework.Language
                                          window.ReadXml(path);
                                      }, "Read Xml")
                                      .Button(() => {
-                                         string path = EditorUtility.OpenFilePanel("xml (End with  xml)", Application.dataPath, "xml");
+                                         string path = EditorUtility.SaveFilePanel("xml (End with  xml)", Application.dataPath,"LanGroup", "xml");
                                          if (string.IsNullOrEmpty(path) || !path.EndsWith(".xml")) return;
                                          window.WriteXml(path);
                                      }, "Write Xml")
@@ -417,7 +419,7 @@ namespace IFramework.Language
                                          window.ReadJson(path);
                                      }, "Read Json")
                                      .Button(() => {
-                                         string path = EditorUtility.OpenFilePanel("json (End With json)", Application.dataPath, "json");
+                                         string path = EditorUtility.SaveFilePanel("json (End With json)", Application.dataPath, "LanGroup", "json");
                                          if (string.IsNullOrEmpty(path) || !path.EndsWith(".json")) return;
                                          window.WriteJson(path);
                                      }, "Write Json")
@@ -429,7 +431,7 @@ namespace IFramework.Language
                                          window.ReadCsv(path);
                                      }, "Read Csv")
                                      .Button(() => {
-                                         string path = EditorUtility.OpenFilePanel("csv (End With csv)", Application.dataPath, "csv");
+                                         string path = EditorUtility.SaveFilePanel("csv (End With csv)", Application.dataPath, "LanGroup", "csv");
                                          if (string.IsNullOrEmpty(path) || !path.EndsWith(".csv")) return;
                                          window.WriteCsv(path);
                                      }, "Write Csv")
@@ -441,7 +443,7 @@ namespace IFramework.Language
                                          window.ReadScriptableObject(path);
                                      }, "Read ScriptableObject")
                                      .Button(() => {
-                                         string path = EditorUtility.OpenFilePanel("ScriptableObject (End With asset)", Application.dataPath, "asset");
+                                         string path = EditorUtility.SaveFilePanel("ScriptableObject (End With asset)", Application.dataPath, "LanGroup", "asset");
                                          if (string.IsNullOrEmpty(path) || !path.EndsWith(".asset")) return;
                                          window.WriteScriptableObject(path);
                                      }, "Write ScriptableObject")
@@ -564,7 +566,7 @@ namespace IFramework.Language
             [SerializeField] private bool keyFoldon;
             [SerializeField] private Vector2 scroll;
             [SerializeField] private string keySearchStr = string.Empty;
-            private SearchFieldDrawer searchField;
+            private SearchField searchField;
             private void LanGroupKeysView()
             {
                 this.DrawHorizontal(() => {
@@ -618,7 +620,7 @@ namespace IFramework.Language
         {
             protected override GUIContent titleContent { get { return Contents.GroupTitle; } }
             private TableViewCalculator _table = new TableViewCalculator();
-            private SearchFieldDrawer search;
+            private SearchField search;
             private Vector2 _scroll;
             private const string key = "Key";
             private const string lan = "Language";
@@ -633,7 +635,7 @@ namespace IFramework.Language
             private const float lineHeight = 20;
             public GroupView()
             {
-                search = new SearchFieldDrawer("", Enum.GetNames(typeof(SearchType)), 0);
+                search = new SearchField("", Enum.GetNames(typeof(SearchType)), 0);
                 search.onModeChange += (value) => { _searchType = (SearchType)value; };
                 search.onValueChange += (value) => { _search = value; };
             }
@@ -655,7 +657,7 @@ namespace IFramework.Language
                         },
                         new ListViewCalculator.ColumnSetting()
                         {
-                            width=100,
+                            width=createView.position.width-100,
                             name=key,
                         },
                           new ListViewCalculator.ColumnSetting()

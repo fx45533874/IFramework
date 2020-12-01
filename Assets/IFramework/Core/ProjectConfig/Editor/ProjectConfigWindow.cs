@@ -10,19 +10,55 @@ using UnityEditor;
 using System.IO;
 using UnityEngine;
 using IFramework.GUITool;
+using UnityEditor.Callbacks;
 
 namespace IFramework
 {
     [EditorWindowCache]
     partial class ProjectConfigWindow
     {
+        [CustomEditor(typeof(ProjectConfigInfo))]
+        class ProjectConfigView : Editor
+        {
+            private static bool isEnable;
+            private void OnEnable()
+            {
+                isEnable = true;
+            }
+            private void OnDisable()
+            {
+                isEnable = false;
+            }
 
-        public static void ShowWindow()
+            //固定写法，双击打开自定义面板
+            [OnOpenAsset(1)]
+            public static bool OpenAsset(int instanceID, int line)
+            {
+                bool open = isEnable && EditorWindow.focusedWindow.titleContent.text == "Project";
+                if (open)
+                    ProjectConfigWindow.ShowWindow();
+                return open;
+            }
+
+
+            public override void OnInspectorGUI()
+            {
+                GUI.enabled = false;
+                base.OnInspectorGUI();
+                GUI.enabled = true;
+                GUILayout.Space(10);
+                if (GUILayout.Button("Open"))
+                {
+                    ProjectConfigWindow.ShowWindow();
+                }
+            }
+        }
+        private static void ShowWindow()
         {
             GetWindow<ProjectConfigWindow>(false, "ProjectConfig", true);
         }
     }
-    partial class ProjectConfigWindow : EditorWindow, ILayoutGUIDrawer
+    partial class ProjectConfigWindow : EditorWindow, ILayoutGUI
     {
         private ProjectConfigInfo Info;
         private void OnEnable()

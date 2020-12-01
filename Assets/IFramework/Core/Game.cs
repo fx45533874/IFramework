@@ -6,17 +6,19 @@
  *Description:    IFramework
  *History:        2018.11--
 *********************************************************************************/
+using IFramework.Modules;
 using UnityEngine;
 
 namespace IFramework
 {
+    [RequireComponent(typeof(Launcher))]
 	public abstract class Game:MonoBehaviour
 	{
         public EnvironmentType envType { get { return Launcher.envType; } }
         public FrameworkEnvironment env { get { return Launcher.env; } }
-        public FrameworkModules modules { get { return Launcher.modules; } }
+        public IFrameworkModules modules { get { return Launcher.modules; } }
 
-
+       
 
         public abstract void CreateModules();
         public abstract void Startup();

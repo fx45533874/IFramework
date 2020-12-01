@@ -17,9 +17,9 @@ namespace IFramework
         public string CreatePath="Assets";
         public ScriptMark[] scriptMarks;
         public string description="";
-        public string prefabDirectory="Assets";
-        public string prefabPath { get { return prefabDirectory.CombinePath(prefabName + ".prefab"); } }
-        public string prefabName = "sp";
-        public bool isCreatePrefab;
+        private void OnEnable()
+        {
+            Destroy(this);
+        }
     }
 }

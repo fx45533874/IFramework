@@ -28,9 +28,6 @@ namespace IFramework.Hotfix
         public UnityModules unityModules = new UnityModules();
         public override void CreateModules()
         {
-            modules.Coroutine = modules.CreateModule<CoroutineModule>();
-            modules.Loom = modules.CreateModule<LoomModule>();
-            modules.Message = modules.CreateModule<MessageModule>();
             unityModules.UI = modules.CreateModule<UIModule>();
             unityModules.Lan = modules.CreateModule<LanguageModule>();
         }

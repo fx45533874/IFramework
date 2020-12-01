@@ -146,7 +146,7 @@ namespace IFramework.Hotfix.AB
 
                 assetNames.Clear();
                 bundleNames.Clear();
-                List<BundleGroup> list = Xml.ToObject<List<BundleGroup>>(txt);
+                List<BundleGroup> list = Xml.FromXml<List<BundleGroup>>(txt);
                 foreach (var content in list)
                 {
                     bundleNames.Add(content.assetBundleName);
@@ -176,8 +176,8 @@ namespace IFramework.Hotfix.AB
         }
 
         private Manifest _manifestXML;
-        private List<string> _assetNames { get { return Instance._manifestXML.assetNames; } }
-        private List<string> _bundleNames { get { return Instance._manifestXML.bundleNames; } }
+        private List<string> _assetNames { get { return instance._manifestXML.assetNames; } }
+        private List<string> _bundleNames { get { return instance._manifestXML.bundleNames; } }
         private string initPath
         {
             get
@@ -193,8 +193,8 @@ namespace IFramework.Hotfix.AB
             }
         }
 
-        public static string GetBundleName(string assetPath) { return Instance._manifestXML.GetBundleName(assetPath); }
-        public static string GetAssetName(string assetPath) { return Instance._manifestXML.GetAssetName(assetPath); }
+        public static string GetBundleName(string assetPath) { return instance._manifestXML.GetBundleName(assetPath); }
+        public static string GetAssetName(string assetPath) { return instance._manifestXML.GetAssetName(assetPath); }
         public static Bundles bundles { get; private set; }
 
         private bool InitializeBundle()
@@ -209,7 +209,7 @@ namespace IFramework.Hotfix.AB
                 throw new FileNotFoundException("assets manifest not exist.");
             using (var reader = new StringReader(xml.text))
             {
-                Instance._manifestXML.Load(reader.ReadToEnd());
+                instance._manifestXML.Load(reader.ReadToEnd());
                 reader.Close();
             }
             bundle.Release();
@@ -220,15 +220,15 @@ namespace IFramework.Hotfix.AB
         public static bool Init()
         {
 #if UNITY_EDITOR
-            if (!ABTool.testmode) return Instance.InitializeBundle();
+            if (!ABTool.testmode) return instance.InitializeBundle();
             return true;
 #else
-			return Instance.InitializeBundle();
+			return instance.InitializeBundle();
 #endif
         }
         public static void InitAsync(Action onComplete)
         {
-            Launcher.instance.StartCoroutine(bundles.InitAsync(Instance.initPath, bundle =>
+            Launcher.instance.StartCoroutine(bundles.InitAsync(instance.initPath, bundle =>
             {
                 if (bundle == null)
                 {
@@ -240,7 +240,7 @@ namespace IFramework.Hotfix.AB
                 {
                     using (var reader = new StringReader(asset.text))
                     {
-                        Instance._manifestXML.Load(reader.ReadToEnd());
+                        instance._manifestXML.Load(reader.ReadToEnd());
                         reader.Close();
                     }
                     bundle.Release();
@@ -276,7 +276,7 @@ namespace IFramework.Hotfix.AB
         }
         private static Asset Load(string path, Type type, bool isAsynnc)
         {
-            Asset asset = Instance.assets.Find(obj => { return obj.assetPath == path; });
+            Asset asset = instance.assets.Find(obj => { return obj.assetPath == path; });
             if (asset == null)
             {
 #if UNITY_EDITOR
@@ -292,7 +292,7 @@ namespace IFramework.Hotfix.AB
                     else
                         asset = new BundleAsset(path, type);
                 }
-                Instance.assets.Add(asset);
+                instance.assets.Add(asset);
                 asset.Load();
             }
             asset.Retain();

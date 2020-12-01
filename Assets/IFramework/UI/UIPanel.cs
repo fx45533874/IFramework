@@ -9,19 +9,6 @@
 using UnityEngine;
 namespace IFramework.UI
 {
-    public enum UILayer
-    {
-        BelowBackground,               //非常BG
-        Background,         //BG
-        BelowAnimation, //背景动画
-        Common,             //普通
-        AboveAnimation,    //上层动画
-        Pop,              //弹框
-        Guide,              //引导
-        Toast,              //对话框
-        Top,                //Top
-        AboveTop,             //非常Top
-    }
     public abstract class UIPanel : MonoBehaviour
     {
         public UILayer layer { get; set; }

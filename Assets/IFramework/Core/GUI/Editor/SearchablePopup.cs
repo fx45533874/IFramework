@@ -97,7 +97,7 @@ namespace IFramework.GUITool
         private int scrollToIndex;
         private float scrollOffset;
         private static GUIStyle Selection = "SelectionRect";
-        private SearchFieldDrawer searchField;
+        private SearchField searchField;
 
         private SearchablePopup(string[] names, int currentIndex, Action<int, string> onSelectionMade)
         {
@@ -108,7 +108,7 @@ namespace IFramework.GUITool
             hoverIndex = currentIndex;
             scrollToIndex = currentIndex;
             scrollOffset = GetWindowSize().y - ROW_HEIGHT * 2;
-            searchField = new SearchFieldDrawer(list.fitter, null, 0);
+            searchField = new SearchField(list.fitter, null, 0);
         }
 
         public override void OnOpen()
@@ -123,7 +123,7 @@ namespace IFramework.GUITool
         }
         public override Vector2 GetWindowSize()
         {
-            return new Vector2(base.GetWindowSize().x,Mathf.Min(600, list.count * ROW_HEIGHT +EditorStyles.toolbar.fixedHeight));
+            return new Vector2(base.GetWindowSize().x*2,Mathf.Min(600, list.count * ROW_HEIGHT +EditorStyles.toolbar.fixedHeight));
         }
         public override void OnGUI(Rect rect)
         {

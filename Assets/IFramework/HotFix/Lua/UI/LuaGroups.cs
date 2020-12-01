@@ -16,7 +16,6 @@ namespace IFramework.Hotfix.Lua
     {
         public event Action onDispose;
         public event Func<string,UIPanel> onFindPanel;
-        public event Func<string, bool> onHaveLoad;
         public event Action<UIEventArgs> onInvokeListeners;
         public event Action<UIPanel> onSubscribe;
         public event Action<UIPanel> onUnSubscribe;
@@ -29,7 +28,6 @@ namespace IFramework.Hotfix.Lua
             }
             onDispose = null;
             onFindPanel = null;
-            onHaveLoad = null;
             onSubscribe = null;
             onUnSubscribe = null;
             onInvokeListeners = null;
@@ -69,6 +67,11 @@ namespace IFramework.Hotfix.Lua
             {
                 onUnSubscribe(panel);
             }
+        }
+
+        public void Update()
+        {
+           
         }
     }
 

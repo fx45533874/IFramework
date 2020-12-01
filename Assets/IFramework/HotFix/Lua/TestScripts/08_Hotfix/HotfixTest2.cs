@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using XLua;
-
+#pragma warning disable 
 namespace IFramework.Hotfix.Lua
 {
     [Hotfix]

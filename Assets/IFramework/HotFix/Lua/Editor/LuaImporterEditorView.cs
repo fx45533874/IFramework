@@ -14,7 +14,7 @@ using UnityEditor.Experimental.AssetImporters;
 namespace IFramework.Hotfix.Lua
 {
     [CustomEditor(typeof(LuaImporter))]
-    public class LuaImporterEditorView: ScriptedImporterEditor,ILayoutGUIDrawer
+    public class LuaImporterEditorView: ScriptedImporterEditor,ILayoutGUI
     {
         LuaImporter im { get { return this.target as LuaImporter; } }
         public override void OnInspectorGUI()

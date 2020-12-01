@@ -95,83 +95,83 @@ namespace XLua
 	internal partial class InternalGlobals
     {
 	    
-		delegate IFramework.Tweens.Tween __GEN_DELEGATE0( IFramework.Tweens.Tween tween,  bool rec);
+		delegate IFramework.Tweens.ITween __GEN_DELEGATE0( IFramework.Tweens.ITween tween,  bool rec);
 		
-		delegate IFramework.Tweens.Tween __GEN_DELEGATE1( IFramework.Tweens.Tween tween,  System.Action onCompelete);
+		delegate IFramework.Tweens.ITween __GEN_DELEGATE1( IFramework.Tweens.ITween tween,  System.Action onCompelete);
 		
-		delegate IFramework.Tweens.Tween __GEN_DELEGATE2( IFramework.Tweens.Tween tween,  int loop,  IFramework.Tweens.LoopType loopType);
+		delegate IFramework.Tweens.ITween __GEN_DELEGATE2( IFramework.Tweens.ITween tween,  int loop,  IFramework.Tweens.LoopType loopType);
 		
-		delegate IFramework.Tweens.Tween __GEN_DELEGATE3( IFramework.Tweens.Tween tween,  IFramework.ValueCurve curve);
+		delegate IFramework.Tweens.ITween __GEN_DELEGATE3( IFramework.Tweens.ITween tween,  IFramework.ValueCurve curve);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Vector3> __GEN_DELEGATE4( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Vector3> __GEN_DELEGATE4( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE5( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE5( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE6( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE6( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE7( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE7( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Vector3> __GEN_DELEGATE8( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Vector3> __GEN_DELEGATE8( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE9( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE9( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE10( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE10( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE11( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE11( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Vector3> __GEN_DELEGATE12( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Vector3> __GEN_DELEGATE12( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE13( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE13( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE14( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE14( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE15( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE15( UnityEngine.Transform target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Quaternion> __GEN_DELEGATE16( UnityEngine.Transform target,  UnityEngine.Quaternion end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Quaternion> __GEN_DELEGATE16( UnityEngine.Transform target,  UnityEngine.Quaternion end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Vector3> __GEN_DELEGATE17( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Vector3> __GEN_DELEGATE17( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Quaternion> __GEN_DELEGATE18( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Quaternion> __GEN_DELEGATE18( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Quaternion> __GEN_DELEGATE19( UnityEngine.Transform target,  UnityEngine.Quaternion end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Quaternion> __GEN_DELEGATE19( UnityEngine.Transform target,  UnityEngine.Quaternion end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Quaternion> __GEN_DELEGATE20( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Quaternion> __GEN_DELEGATE20( UnityEngine.Transform target,  UnityEngine.Vector3 end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Color> __GEN_DELEGATE21( UnityEngine.Material target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Color> __GEN_DELEGATE21( UnityEngine.Material target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Color> __GEN_DELEGATE22( UnityEngine.UI.Graphic target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Color> __GEN_DELEGATE22( UnityEngine.UI.Graphic target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Color> __GEN_DELEGATE23( UnityEngine.Light target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Color> __GEN_DELEGATE23( UnityEngine.Light target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<UnityEngine.Color> __GEN_DELEGATE24( UnityEngine.Camera target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<UnityEngine.Color> __GEN_DELEGATE24( UnityEngine.Camera target,  UnityEngine.Color end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE25( UnityEngine.Material target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE25( UnityEngine.Material target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE26( UnityEngine.UI.Graphic target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE26( UnityEngine.UI.Graphic target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE27( UnityEngine.Light target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE27( UnityEngine.Light target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE28( UnityEngine.Camera target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE28( UnityEngine.Camera target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE29( UnityEngine.CanvasGroup target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE29( UnityEngine.CanvasGroup target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<int> __GEN_DELEGATE30( UnityEngine.UI.Text target,  int start,  int end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<int> __GEN_DELEGATE30( UnityEngine.UI.Text target,  int start,  int end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<int> __GEN_DELEGATE31( UnityEngine.UI.Text target,  string end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<int> __GEN_DELEGATE31( UnityEngine.UI.Text target,  string end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE32( UnityEngine.UI.Text target,  float start,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE32( UnityEngine.UI.Text target,  float start,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE33( UnityEngine.UI.Image target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE33( UnityEngine.UI.Image target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE34( UnityEngine.UI.ScrollRect target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE34( UnityEngine.UI.ScrollRect target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<float> __GEN_DELEGATE35( UnityEngine.UI.ScrollRect target,  float end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<float> __GEN_DELEGATE35( UnityEngine.UI.ScrollRect target,  float end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<bool> __GEN_DELEGATE36( UnityEngine.GameObject target,  bool end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<bool> __GEN_DELEGATE36( UnityEngine.GameObject target,  bool end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<bool> __GEN_DELEGATE37( UnityEngine.Behaviour target,  bool end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<bool> __GEN_DELEGATE37( UnityEngine.Behaviour target,  bool end,  float dur,  IFramework.EnvironmentType env);
 		
-		delegate IFramework.Tweens.Tween<bool> __GEN_DELEGATE38( UnityEngine.UI.Toggle target,  bool end,  float dur,  IFramework.EnvironmentType env);
+		delegate IFramework.Tweens.ITween<bool> __GEN_DELEGATE38( UnityEngine.UI.Toggle target,  bool end,  float dur,  IFramework.EnvironmentType env);
 		
 		delegate bool __GEN_DELEGATE39( UnityEngine.Object o);
 		
@@ -180,7 +180,7 @@ namespace XLua
 		    extensionMethodMap = new Dictionary<Type, IEnumerable<MethodInfo>>()
 			{
 			    
-				{typeof(IFramework.Tweens.Tween), new List<MethodInfo>(){
+				{typeof(IFramework.Tweens.ITween), new List<MethodInfo>(){
 				
 				  new __GEN_DELEGATE0(IFramework.Tweens.TweenEx.SetRecyle)
 #if UNITY_WSA && !UNITY_EDITOR

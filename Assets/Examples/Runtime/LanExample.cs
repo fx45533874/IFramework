@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace IFramework_Demo
 {
-
     public class LanExample:MonoBehaviour
 	{
         class TestLoader 
@@ -38,19 +37,20 @@ namespace IFramework_Demo
         }
         [LanguageKey]
         public string key="77";
-        LanguageModule.LanObserver observer;
+        IDelegateLanguageObserver observer;
         LanguageModule mou;
         private void Start()
         {
             mou = Framework.env0.modules.CreateModule<LanguageModule>();
             mou.Load(new TestLoader().Load());
-            observer= mou.CreatObserver(key, SystemLanguage.English).ObserveEvent((lan, val) => { Log.E(val); });
+            observer= mou.CreateDelegateObserver(key, SystemLanguage.English)
+                .Listen(( val) => { Log.E(val); });
         }
         int index;
         private void Update()
         {
             index = ++index % 40;
-            mou.lan = (SystemLanguage)index;
+            mou.language = (SystemLanguage)index;
         }
         
     }

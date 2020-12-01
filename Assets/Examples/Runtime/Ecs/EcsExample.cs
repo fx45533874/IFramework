@@ -6,17 +6,16 @@
  *Description:    Description
  *History:        2020-02-10--
 *********************************************************************************/
+using IFramework;
 using IFramework.Modules;
 using IFramework.Modules.ECS;
+using UnityEngine;
 
 namespace IFramework_Demo
 {
 
-    public class EcsExample:UnityEngine.MonoBehaviour
+    public class EcsExample:Game
 	{
-
-         
-
         private class SimpleEntity : Entity { }
         private class PlayerComponent : IComponent { }
         private class PCComponent : IComponent { }
@@ -31,7 +30,7 @@ namespace IFramework_Demo
         }
         private class PlayerSystem : ExcuteSystem<SimpleEntity>
         {
-            public PlayerSystem(ECSModule module) : base(module) { }
+            public PlayerSystem(IECSModule module) : base(module) { }
             protected override bool Fitter(SimpleEntity entity)
             {
                 return entity.ContainsComponent<PlayerComponent>() && entity.ContainsComponent<RotaComponet>();
@@ -44,7 +43,7 @@ namespace IFramework_Demo
         }
         private class PCSystem : ExcuteSystem<SimpleEntity>
         {
-            public PCSystem(ECSModule module) : base(module) { }
+            public PCSystem(IECSModule module) : base(module) { }
             protected override bool Fitter(SimpleEntity entity)
             {
                 return entity.ContainsComponent<PCComponent>() && entity.ContainsComponent<RotaComponet>()&& entity.ContainsComponent<SpeedComponent>();
@@ -59,31 +58,55 @@ namespace IFramework_Demo
             }
         }
 
-        private ECSModule module;
-        private void Start()
+
+
+        public override void CreateModules()
         {
-            module = FrameworkModule.CreatInstance<ECSModule>("","");
+        }
+        public GameObject pc,pr;
+
+        public override void Startup()
+        {
+        var    module = Framework.env1.modules.ECS;
             module.SubscribeSystem(new PlayerSystem(module));
             module.SubscribeSystem(new PCSystem(module));
 
-            var player = module.CreateEntity<SimpleEntity>();
-            player.AddComponent<PlayerComponent>();
-            var playerRO = player.AddComponent<RotaComponet>();
-            playerRO.go = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
-            playerRO.go.name = "Player";
-            playerRO.go.transform.position = new UnityEngine.Vector3(0, -2,0);
+            for (int i = 0; i < 20; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    for (int k = 0; k < 10; k++)
+                    {
+                        var player = module.CreateEntity<SimpleEntity>();
+                        player.AddComponent<PlayerComponent>();
+                        var playerRO = player.AddComponent<RotaComponet>();
+                        playerRO.go = GameObject.Instantiate(this.pr);
+                        playerRO.go.name = "Player";
+                        playerRO.go.transform.position = new UnityEngine.Vector3(i, j, k);
+                    }
+                }
 
-            var pc = module.CreateEntity<SimpleEntity>();
-            pc.AddComponent<SpeedComponent>();
-            pc.AddComponent<PCComponent>();
-            var pcRO = pc.AddComponent<RotaComponet>();
-            pcRO.go = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
-            pcRO.go.name = "Pc";
-            pcRO.go.transform.position = new UnityEngine.Vector3(0, 2, 0);
-        }
-        private void Update()
-        {
-            module.Update();
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    for (int k = 0; k < 10; k++)
+                    {
+                        var pc = module.CreateEntity<SimpleEntity>();
+                        pc.AddComponent<SpeedComponent>();
+                        pc.AddComponent<PCComponent>();
+                        var pcRO = pc.AddComponent<RotaComponet>();
+                        pcRO.go = GameObject.Instantiate(this.pc);
+
+                        pcRO.go.name = "Pc";
+                        pcRO.go.transform.position = new UnityEngine.Vector3(-i, j, k);
+                    }
+                }
+
+            }
+
         }
     }
 }

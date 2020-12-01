@@ -37,6 +37,7 @@ namespace IFramework_Demo
             {
                 module.Get<Panel02>("Panel02");
             }
+            Framework.env1.Update();
         }
 
         public UIPanel Load(Type type, string name, UILayer layer = UILayer.Common, string path = "")

@@ -1,128 +1,128 @@
 <?xml version="1.0" encoding="utf-16"?>
-<ABEditorInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <DirCollect>
-    <DirCollectItems>
-      <ABDirCollectItem>
-        <CollectType>DirName</CollectType>
-        <SearchPath>Assets/Examples/Runtime/ABExample</SearchPath>
+<WindowMemory xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <colect>
+    <collection>
+      <Collection>
+        <type>DirName</type>
+        <path>Assets/Examples/Runtime/ABExample</path>
         <subAsset>
           <isOpen>true</isOpen>
           <path>Assets/Examples/Runtime/ABExample</path>
           <name>ABExample</name>
           <fileType>Folder</fileType>
           <SubFiles>
-            <ABSubFile>
+            <SubFile>
               <isOpen>false</isOpen>
               <path>Assets/Examples/Runtime/ABExample/ABExample.cs</path>
               <name>ABExample</name>
               <fileType>InValidFile</fileType>
               <SubFiles />
               <Selected>false</Selected>
-            </ABSubFile>
-            <ABSubFile>
+            </SubFile>
+            <SubFile>
               <isOpen>false</isOpen>
               <path>Assets/Examples/Runtime/ABExample/Logo.prefab</path>
               <name>Logo</name>
               <fileType>ValidFile</fileType>
               <SubFiles />
               <Selected>true</Selected>
-            </ABSubFile>
-            <ABSubFile>
+            </SubFile>
+            <SubFile>
               <isOpen>false</isOpen>
               <path>Assets/Examples/Runtime/ABExample/tx 1.png</path>
               <name>tx 1</name>
               <fileType>ValidFile</fileType>
               <SubFiles />
               <Selected>true</Selected>
-            </ABSubFile>
-            <ABSubFile>
+            </SubFile>
+            <SubFile>
               <isOpen>false</isOpen>
               <path>Assets/Examples/Runtime/ABExample/tx.png</path>
               <name>tx</name>
               <fileType>ValidFile</fileType>
               <SubFiles />
               <Selected>true</Selected>
-            </ABSubFile>
-            <ABSubFile>
+            </SubFile>
+            <SubFile>
               <isOpen>false</isOpen>
               <path>Assets/Examples/Runtime/ABExample/UnityLogo 1.png</path>
               <name>UnityLogo 1</name>
               <fileType>ValidFile</fileType>
               <SubFiles />
               <Selected>true</Selected>
-            </ABSubFile>
-            <ABSubFile>
+            </SubFile>
+            <SubFile>
               <isOpen>false</isOpen>
               <path>Assets/Examples/Runtime/ABExample/UnityLogo.png</path>
               <name>UnityLogo</name>
               <fileType>ValidFile</fileType>
               <SubFiles />
               <Selected>true</Selected>
-            </ABSubFile>
+            </SubFile>
           </SubFiles>
           <Selected>true</Selected>
         </subAsset>
-      </ABDirCollectItem>
-    </DirCollectItems>
-  </DirCollect>
-  <ABBuiidInfo>
-    <Dependences>
-      <ABDeprndence>
-        <AssetPath>Assets/IFramework/Hotfix/Manifest_AssetBundle.Xml</AssetPath>
-        <BundleName>.</BundleName>
-        <Size>884 B</Size>
-        <FileLength>884</FileLength>
-        <AssetBundles>
+      </Collection>
+    </collection>
+  </colect>
+  <build>
+    <dps>
+      <Deprndences>
+        <assetPath>Assets/IFramework/Hotfix/Manifest_AssetBundle.Xml</assetPath>
+        <bundleName>.</bundleName>
+        <size>1 KB</size>
+        <fileLength>1025</fileLength>
+        <bundles>
           <string>help</string>
-        </AssetBundles>
-      </ABDeprndence>
-      <ABDeprndence>
-        <AssetPath>Assets/Examples/Runtime/ABExample/UnityLogo.png</AssetPath>
-        <BundleName>logo.</BundleName>
-        <Size>69.63 KB</Size>
-        <FileLength>71306</FileLength>
-        <AssetBundles>
+        </bundles>
+      </Deprndences>
+      <Deprndences>
+        <assetPath>Assets/Examples/Runtime/ABExample/UnityLogo.png</assetPath>
+        <bundleName>logo.</bundleName>
+        <size>69.63 KB</size>
+        <fileLength>71306</fileLength>
+        <bundles>
           <string>shared/assets/examples/runtime/abexample_1</string>
-        </AssetBundles>
-      </ABDeprndence>
-      <ABDeprndence>
-        <AssetPath>Assets/Examples/Runtime/ABExample/Logo.prefab</AssetPath>
-        <BundleName>logo.</BundleName>
-        <Size>2.24 KB</Size>
-        <FileLength>2290</FileLength>
-        <AssetBundles>
+        </bundles>
+      </Deprndences>
+      <Deprndences>
+        <assetPath>Assets/Examples/Runtime/ABExample/Logo.prefab</assetPath>
+        <bundleName>logo.</bundleName>
+        <size>2.24 KB</size>
+        <fileLength>2290</fileLength>
+        <bundles>
           <string>assets/examples/runtime/abexample_4</string>
-        </AssetBundles>
-      </ABDeprndence>
-      <ABDeprndence>
-        <AssetPath>Assets/Examples/Runtime/ABExample/tx 1.png</AssetPath>
-        <BundleName>.</BundleName>
-        <Size>695 B</Size>
-        <FileLength>695</FileLength>
-        <AssetBundles>
+        </bundles>
+      </Deprndences>
+      <Deprndences>
+        <assetPath>Assets/Examples/Runtime/ABExample/tx 1.png</assetPath>
+        <bundleName>.</bundleName>
+        <size>695 B</size>
+        <fileLength>695</fileLength>
+        <bundles>
           <string>assets/examples/runtime/abexample_4</string>
-        </AssetBundles>
-      </ABDeprndence>
-      <ABDeprndence>
-        <AssetPath>Assets/Examples/Runtime/ABExample/tx.png</AssetPath>
-        <BundleName>.</BundleName>
-        <Size>695 B</Size>
-        <FileLength>695</FileLength>
-        <AssetBundles>
+        </bundles>
+      </Deprndences>
+      <Deprndences>
+        <assetPath>Assets/Examples/Runtime/ABExample/tx.png</assetPath>
+        <bundleName>.</bundleName>
+        <size>695 B</size>
+        <fileLength>695</fileLength>
+        <bundles>
           <string>assets/examples/runtime/abexample_4</string>
-        </AssetBundles>
-      </ABDeprndence>
-      <ABDeprndence>
-        <AssetPath>Assets/Examples/Runtime/ABExample/UnityLogo 1.png</AssetPath>
-        <BundleName>logo.</BundleName>
-        <Size>69.63 KB</Size>
-        <FileLength>71306</FileLength>
-        <AssetBundles>
+        </bundles>
+      </Deprndences>
+      <Deprndences>
+        <assetPath>Assets/Examples/Runtime/ABExample/UnityLogo 1.png</assetPath>
+        <bundleName>logo.</bundleName>
+        <size>69.63 KB</size>
+        <fileLength>71306</fileLength>
+        <bundles>
           <string>assets/examples/runtime/abexample_4</string>
-        </AssetBundles>
-      </ABDeprndence>
-    </Dependences>
-    <AssetbundleBuilds>
+        </bundles>
+      </Deprndences>
+    </dps>
+    <abbs>
       <AssetBundleBuild_Class>
         <assetBundleName>assets/examples/runtime/abexample_4</assetBundleName>
         <assetNames>
@@ -153,9 +153,9 @@
         </assetNames>
         <addressableNames />
         <CrossRefence>false</CrossRefence>
-        <FileLength>884</FileLength>
-        <Size>884 B</Size>
+        <FileLength>1025</FileLength>
+        <Size>1 KB</Size>
       </AssetBundleBuild_Class>
-    </AssetbundleBuilds>
-  </ABBuiidInfo>
-</ABEditorInfo>
+    </abbs>
+  </build>
+</WindowMemory>

@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using IFramework;
+using IFramework.GUITool.Inspector;
 using UnityEngine;
+using static IFramework.GUITool.Inspector.HelpBoxAttribute;
+
 namespace IFramework_Demo
 {
     public class AttributeTest : MonoBehaviour
     {
         public bool hh;
-        [IsShow("hh")]
+        [ToggleShowAttribute("hh")]
         public string xx;
 
         [SearchableString("SSR")]
@@ -32,16 +35,16 @@ namespace IFramework_Demo
         public string txt;
         [AssetPreview]
         public GameObject go;
-        [MethodButton(MethodName = "SayTest")]
+        [MethodButton(method = "SayTest")]
         public int test = 11;
         private void SayTest()
         {
             Debug.Log(SSR);
             Debug.Log(test);
         }
-        [ProgressBar(Text = "", MinValue = -10, MaxValue = 10, ShowSlider = false)]
+        [ProgressBar(text = "", minValue = -10, maxValue = 10, showSlider = false)]
         public int sl;
-        [ProgressBar(Text = " ", MinValue = -10, MaxValue = 10)]
+        [ProgressBar(text = " ", minValue = -10, maxValue = 10)]
         public float s2;
         [Reset]
         public int cc;

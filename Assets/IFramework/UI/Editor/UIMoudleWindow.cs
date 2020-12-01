@@ -19,7 +19,7 @@ using IFramework.Serialization;
 namespace IFramework.UI
 {
     [EditorWindowCache("IFramework.UIModule")]
-	public partial class UIMoudleWindow:EditorWindow,ILayoutGUIDrawer
+	public partial class UIMoudleWindow:EditorWindow,ILayoutGUI
 	{
         private class Contents
         {
@@ -50,7 +50,7 @@ namespace IFramework.UI
                 BoldLabel.fontSize = 10;
             }
         }
-        public class UIMoudleWindowTab : ILayoutGUIDrawer
+        public class UIMoudleWindowTab : ILayoutGUI
         {
             public virtual string name { get; }
             public virtual void OnGUI() { }
@@ -61,7 +61,7 @@ namespace IFramework.UI
         {
             private const float typeWith = 200;
             private const float paneltypeWith = 100;
-            private SearchFieldDrawer searcher;
+            private SearchField searcher;
             private UIModule moudle;
             [SerializeField] private Vector2 stackSroll, cacheScroll;
             [SerializeField] private string searchText_module = string.Empty;
@@ -85,7 +85,7 @@ namespace IFramework.UI
 
             public override void OnEnable()
             {
-                searcher = new SearchFieldDrawer("", null, 0);
+                searcher = new SearchField("", null, 0);
 
                 searcher.onEndEdit += (str) =>
                 {

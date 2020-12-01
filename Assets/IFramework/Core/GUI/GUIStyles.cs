@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IFramework
+namespace IFramework.GUITool
 {
 	public static class GUIStyles
 	{

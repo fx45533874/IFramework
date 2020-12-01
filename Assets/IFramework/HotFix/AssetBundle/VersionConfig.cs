@@ -11,7 +11,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-namespace IFramework
+namespace IFramework.Hotfix.AB
 {
     public class VersionConfig : ScriptableObject
     {
@@ -94,6 +94,10 @@ namespace IFramework
             Version v = new Version(version, bundleVersions);
             v.SetChange(laset);
             versions.Add(v);
+        }
+        public void Clear()
+        {
+            versions.Clear();
         }
 #endif
 

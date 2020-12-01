@@ -13,7 +13,7 @@ using UnityEngine;
 namespace IFramework.GUITool
 {
     [Serializable]
-    public class SplitView
+    public class SplitView:GUIBase
     {
         public SplitType splitType = SplitType.Vertical;
         public float split = 200;
@@ -47,7 +47,7 @@ namespace IFramework.GUITool
             }
         }
         private bool _resizing;
-        public void OnGUI(Rect position)
+        public override void OnGUI(Rect position)
         {
             var rs = position.Split(splitType, split, 4);
             var mid = position.SplitRect(splitType, split, 4);
@@ -102,6 +102,13 @@ namespace IFramework.GUITool
                     }
                     break;
             }
+        }
+        protected override void OnDispose()
+        {
+            fistPan = null;
+            secondPan = null;
+            onBeginResize = null;
+            onEndResize = null;
         }
     }
 }

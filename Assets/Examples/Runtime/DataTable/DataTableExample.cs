@@ -34,8 +34,8 @@ namespace IFramework_Demo
         //ICsvExplainer 基本不用改
         //读取时候 具体的类型需要有一个公共的无参数构造函数，否则ICsvExplainer 需要改动
         void Read() {
-            DataReader r =
-                new DataReader(new System.IO.StreamReader(path, System.Text.Encoding.UTF8),
+            var r =
+                DataTableTool.CreateReader(new System.IO.StreamReader(path, System.Text.Encoding.UTF8),
                 new DataRow(),
                 new DataExplainer());
             var cc = r.Get<Man>();
@@ -52,7 +52,7 @@ namespace IFramework_Demo
             new Man(){ age=2,sex="m1",Name="xm1"},
             new Man(){ age=3,sex="m2",Name="xm2"},
             };
-            DataWriter w = new DataWriter(new System.IO.StreamWriter(path, false),
+            var w = DataTableTool.CreateWriter(new System.IO.StreamWriter(path, false),
                 new DataRow(),
                 new DataExplainer());
             w.Write(cs);

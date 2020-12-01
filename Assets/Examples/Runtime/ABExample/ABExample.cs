@@ -12,22 +12,9 @@ using IFramework.Hotfix.AB;
 using IFramework;
 namespace IFramework_Demo
 {
-	public class ABExample:MonoBehaviour
+	public class ABExample:Game
 	{
   
-        void Start()
-        {
-            if (Assets.Init())
-            {
-                StartCoroutine(Load());
-
-            }
-            //Assets.InitAsync(() =>
-            //{
-            //    StartCoroutine(Load());
-            //});
-
-        }
         [SerializeField] string assetPath = "Assets/Examples/Runtime/ABExample/Logo.prefab";
         IEnumerator Load()
         {
@@ -64,5 +51,23 @@ namespace IFramework_Demo
             }
         }
 
+        public override void CreateModules()
+        {
+
+        }
+
+        public override void Startup()
+        {
+            if (Assets.Init())
+            {
+                StartCoroutine(Load());
+
+            }
+            //Assets.InitAsync(() =>
+            //{
+            //    StartCoroutine(Load());
+            //});
+
+        }
     }
 }

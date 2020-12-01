@@ -13,13 +13,18 @@ namespace IFramework.GUITool
 {
     public abstract class GUIBase :IDisposable
     {
-        private Rect position;
+        public Rect position { get; private set; }
 
         public virtual void OnGUI(Rect position) 
         {
             this.position = position;
         }
-        public abstract void Dispose();
+        public void Dispose()
+        {
+            OnDispose();
+        }
+
+        protected virtual void OnDispose() { }
     }
 
 }

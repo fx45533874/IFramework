@@ -21,6 +21,7 @@ namespace IFramework.Hotfix.AB
         public const string assetsDir = "AssetBundles";
         public const string helpABName = "help";
         public static string assetsOutPutPath = assetsDir.CombinePath(platformName);
+        public static string versionPath { get { return string.Format("Assets/IFramework/Hotfix/Version_{0}.asset", platformName); } }
         public static string platformName
         {
             get

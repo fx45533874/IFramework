@@ -10,7 +10,7 @@
 namespace IFramework
 {
     [OnEnvironmentInit]
-    public static  class ProjectConfig
+    public static class ProjectConfig
     {
         public static string NameSpace { get { return info.NameSpace; } }
         public static string UserName { get { return info.UserName; } }
@@ -34,7 +34,7 @@ namespace IFramework
         private static void LoadProjectInfo()
         {
             __info = UnityEngine.Resources.Load<ProjectConfigInfo>(configName);
-            if (__info==null)
+            if (__info == null)
             {
                 Log.E("Open Project Config Window in WindowCollection");
             }

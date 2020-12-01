@@ -6,6 +6,7 @@
  *Description:    IFramework
  *History:        2018.11--
 *********************************************************************************/
+using IFramework.Modules;
 using System;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace IFramework
         public Game game;
         public const EnvironmentType envType = EnvironmentType.Ev1;
         public static FrameworkEnvironment env { get { return Framework.GetEnv(envType); } }
-        public static FrameworkModules modules { get { return env.modules; } }
+        public static IFrameworkModules modules { get { return env.modules; } }
 
         private static event Action onFixUpdate;
         private static event Action onLateUpdate;
@@ -31,6 +32,8 @@ namespace IFramework
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
+            if (game == null)
+                game = GetComponent<Game>();
             instance = this;
             Framework.CreateEnv("Game_RT", envType).InitWithAttribute();
             game.CreateModules();

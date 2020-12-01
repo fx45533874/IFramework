@@ -12,10 +12,10 @@ using System;
 using UnityEditor.Compilation;
 using System.IO;
 using System.Collections.Generic;
+using IFramework.Modules;
 
 namespace IFramework
 {
-
     class EditorEnv
     {
         public interface IFileInitializer
@@ -90,7 +90,7 @@ namespace IFramework
 
         public const EnvironmentType envType = EnvironmentType.Ev0;
         public static FrameworkEnvironment env { get { return Framework.env0; } }
-        public static FrameworkModules moudules { get { return env.modules; } }
+        public static IFrameworkModules moudules { get { return env.modules; } }
 
 
 
@@ -159,7 +159,6 @@ namespace IFramework
             };
 
             update += Framework.env0.Update;
-            Framework.env0.modules.Coroutine = Framework.env0.modules.CreateModule<CoroutineModule>();
 #if UNITY_2018_1_OR_NEWER
             PlayerSettings.allowUnsafeCode = true;
 #else
@@ -177,9 +176,8 @@ namespace IFramework
                     (Activator.CreateInstance(type) as IFileInitializer).Create();
                 }
             });
-             
-            if (!EditorApplication.isUpdating)
-                AssetDatabase.Refresh();
+            delayCall += () => { AssetDatabase.Refresh(); };
+              
 
         }
     }

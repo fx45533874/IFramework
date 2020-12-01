@@ -14,7 +14,7 @@ using UnityEngine;
 namespace IFramework
 {
     [CanEditMultipleObjects,CustomEditor(typeof(ScriptMark))]
-    public class ScriptMarkEditor : Editor
+    class ScriptMarkEditor : Editor
     {
         public ScriptMark SM { get { return this.target as ScriptMark; } }
         public override void OnInspectorGUI()
@@ -36,6 +36,7 @@ namespace IFramework
             GUILayout.Label("Type");
             SM.SelectTypeIndex = EditorGUILayout.Popup(SM.SelectTypeIndex, names.ToArray());
             SM.fieldType = names[SM.SelectTypeIndex];
+            SM.type = cps[SM.SelectTypeIndex].GetType();
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();

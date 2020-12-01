@@ -238,10 +238,7 @@ namespace IFramework.GUITool
             }
         }
 
-        public override void Dispose()
-        {
-           
-        }
+    
     }
 
 }

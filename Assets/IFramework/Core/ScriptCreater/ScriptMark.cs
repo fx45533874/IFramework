@@ -6,6 +6,7 @@
  *Description:    IFramework
  *History:        2018.11--
 *********************************************************************************/
+using System;
 using UnityEngine;
 namespace IFramework
 {
@@ -17,6 +18,10 @@ namespace IFramework
         public string fieldType;
         public string description;
         public int SelectTypeIndex;
+        public Type type;
+        private void OnEnable()
+        {
+            Destroy(this);
+        }
     }
-   
 }

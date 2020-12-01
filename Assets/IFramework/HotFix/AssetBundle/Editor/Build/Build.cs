@@ -25,7 +25,7 @@ namespace IFramework.Hotfix.AB
             {
                 contents.Add(new BundleGroup(item.assetBundleName, item.assetNames));
             }
-            string txt = Xml.ToXmlString<List<BundleGroup>>(contents);
+            string txt = Xml.ToXml<List<BundleGroup>>(contents);
             File.WriteAllText(path, txt);
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
             AssetDatabase.Refresh();
@@ -73,7 +73,9 @@ namespace IFramework.Hotfix.AB
                 });
             }
             EditorUtility.ClearProgressBar();
-            string path = EditorEnv.frameworkPath.CombinePath(string.Format("Hotfix/Version_{0}.asset",ABTool.platformName));
+
+
+            string path = ABTool.versionPath;
             if (!File.Exists(path)) EditorTools.ScriptableObjectTool.Create<VersionConfig>(path);
             var versions = EditorTools.ScriptableObjectTool.Load<VersionConfig>(path);
 
@@ -81,7 +83,15 @@ namespace IFramework.Hotfix.AB
             EditorTools.ScriptableObjectTool.Update(versions);
 
         }
+        public static void ClearVersions()
+        {
+            string path = ABTool.versionPath;
+            if (!File.Exists(path)) EditorTools.ScriptableObjectTool.Create<VersionConfig>(path);
+            var versions = EditorTools.ScriptableObjectTool.Load<VersionConfig>(path);
 
+            versions.Clear();
+            EditorTools.ScriptableObjectTool.Update(versions);
+        }
 
 
         public static string GetAssetBundleManifestFilePath()

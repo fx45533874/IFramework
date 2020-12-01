@@ -15,144 +15,70 @@ MonoBehaviour:
   versions:
   - version: 1
     bundleVersions:
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help
+    - bundle: help
       size: 1074
-      bundle: help
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help
       crc32: 006B00E3002B0010
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help.manifest
+    - bundle: help.manifest
       size: 359
-      bundle: help.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help.manifest
       crc32: 002600E6003600E3
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows
+    - bundle: Windows
       size: 1088
-      bundle: Windows
-      crc32: 00380074006600E1
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows
+      crc32: 007D00D000240017
+    - bundle: Windows.manifest
       size: 367
-      bundle: Windows.manifest
-      crc32: 00F900FE001F0084
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4
-      size: 9658
-      bundle: assets/examples/runtime/abexample_4
-      crc32: 00C200B2003D00D2
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows.manifest
+      crc32: 00DE003C0021009F
+    - bundle: assets/examples/runtime/abexample_4
+      size: 9664
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4
+      crc32: 00B4004D00F00014
+    - bundle: assets/examples/runtime/abexample_4.manifest
       size: 810
-      bundle: assets/examples/runtime/abexample_4.manifest
-      crc32: 001C0066004C00BD
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1
-      size: 7583
-      bundle: shared/assets/examples/runtime/abexample_1
-      crc32: 00460036007F00AE
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4.manifest
+      crc32: 006200C700E2008C
+    - bundle: shared/assets/examples/runtime/abexample_1
+      size: 7640
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1
+      crc32: 0032001700020034
+    - bundle: shared/assets/examples/runtime/abexample_1.manifest
       size: 396
-      bundle: shared/assets/examples/runtime/abexample_1.manifest
-      crc32: 003000C3004F004C
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1.manifest
+      crc32: 005E0046008C0015
     _delete: []
     _change: []
     _create:
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help
+    - bundle: help
       size: 1074
-      bundle: help
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help
       crc32: 006B00E3002B0010
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help.manifest
+    - bundle: help.manifest
       size: 359
-      bundle: help.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help.manifest
       crc32: 002600E6003600E3
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows
+    - bundle: Windows
       size: 1088
-      bundle: Windows
-      crc32: 00380074006600E1
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows
+      crc32: 007D00D000240017
+    - bundle: Windows.manifest
       size: 367
-      bundle: Windows.manifest
-      crc32: 00F900FE001F0084
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4
-      size: 9658
-      bundle: assets/examples/runtime/abexample_4
-      crc32: 00C200B2003D00D2
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows.manifest
+      crc32: 00DE003C0021009F
+    - bundle: assets/examples/runtime/abexample_4
+      size: 9664
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4
+      crc32: 00B4004D00F00014
+    - bundle: assets/examples/runtime/abexample_4.manifest
       size: 810
-      bundle: assets/examples/runtime/abexample_4.manifest
-      crc32: 001C0066004C00BD
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1
-      size: 7583
-      bundle: shared/assets/examples/runtime/abexample_1
-      crc32: 00460036007F00AE
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1.manifest
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4.manifest
+      crc32: 006200C700E2008C
+    - bundle: shared/assets/examples/runtime/abexample_1
+      size: 7640
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1
+      crc32: 0032001700020034
+    - bundle: shared/assets/examples/runtime/abexample_1.manifest
       size: 396
-      bundle: shared/assets/examples/runtime/abexample_1.manifest
-      crc32: 003000C3004F004C
-  - version: 2
-    bundleVersions:
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help
-      size: 1074
-      bundle: help
-      crc32: 006B00E3002B0010
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help.manifest
-      size: 359
-      bundle: help.manifest
-      crc32: 002600E6003600E3
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows
-      size: 1088
-      bundle: Windows
-      crc32: 00380074006600E1
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows.manifest
-      size: 367
-      bundle: Windows.manifest
-      crc32: 00F900FE001F0084
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4
-      size: 9658
-      bundle: assets/examples/runtime/abexample_4
-      crc32: 00C200B2003D00D2
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4.manifest
-      size: 810
-      bundle: assets/examples/runtime/abexample_4.manifest
-      crc32: 001C0066004C00BD
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1
-      size: 7583
-      bundle: shared/assets/examples/runtime/abexample_1
-      crc32: 00460036007F00AE
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1.manifest
-      size: 396
-      bundle: shared/assets/examples/runtime/abexample_1.manifest
-      crc32: 003000C3004F004C
-    _delete: []
-    _change: []
-    _create: []
-  - version: 3
-    bundleVersions:
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help
-      size: 1074
-      bundle: help
-      crc32: 006B00E3002B0010
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/help.manifest
-      size: 359
-      bundle: help.manifest
-      crc32: 002600E6003600E3
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows
-      size: 1088
-      bundle: Windows
-      crc32: 00380074006600E1
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/Windows.manifest
-      size: 367
-      bundle: Windows.manifest
-      crc32: 00F900FE001F0084
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4
-      size: 9658
-      bundle: assets/examples/runtime/abexample_4
-      crc32: 00C200B2003D00D2
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/assets/examples/runtime/abexample_4.manifest
-      size: 810
-      bundle: assets/examples/runtime/abexample_4.manifest
-      crc32: 001C0066004C00BD
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1
-      size: 7583
-      bundle: shared/assets/examples/runtime/abexample_1
-      crc32: 00460036007F00AE
-    - path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1.manifest
-      size: 396
-      bundle: shared/assets/examples/runtime/abexample_1.manifest
-      crc32: 003000C3004F004C
-    _delete: []
-    _change: []
-    _create: []
+      path: E:/Project/Unity/IF_Git/AssetBundles/Windows/shared/assets/examples/runtime/abexample_1.manifest
+      crc32: 005E0046008C0015

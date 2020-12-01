@@ -30,7 +30,7 @@ namespace IFramework_Demo
         static INNN nnn=null;
         private void Awake()
         {
-            Framework.env0.container.RegisterInstance<INNN>(new NNN());
+            Framework.env0.container.SubscribeInstance<INNN>(new NNN());
             Framework.env0.container.Inject(this); 
             nnn.ToDo();
         }

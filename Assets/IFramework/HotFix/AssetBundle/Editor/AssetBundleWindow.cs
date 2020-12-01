@@ -7,76 +7,393 @@
  *History:        2018.11--
 *********************************************************************************/
 using IFramework.GUITool;
-using IFramework.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 using IFramework.Serialization;
-using IFramework.GUITool.HorizontalMenuToorbar;
+using IFramework.GUITool.ToorbarMenu;
+using System.Linq;
 
 namespace IFramework.Hotfix.AB
 {
     [EditorWindowCache("IFramework.AssetBundle")]
-    partial class AssetBundleWindow : EditorWindow,ILayoutGUIDrawer
+    public partial class AssetBundleWindow : EditorWindow,ILayoutGUI
     {
-        private abstract class GUIBase
+        public class WindowMemory
         {
-            protected Rect position { get; private set; }
-            public virtual void OnGUI(Rect position)
+            [Serializable]
+            public class Collections
             {
-                this.position = position;
+                [Serializable]
+                public class Collection
+                {
+                    [Serializable]
+                    public class SubFile
+                    {
+                        public enum FileType
+                        {
+                            ValidFile,
+                            Folder,
+                            InValidFile
+                        }
+
+                        public bool isOpen;
+
+                        public string path;
+                        public string name;
+                        public FileType fileType;
+
+                        [NonSerialized]
+                        private Texture2D thumbnail;
+                        public Texture2D ThumbNail
+                        {
+                            get
+                            {
+                                if (thumbnail == null)
+                                {
+                                    if (fileType == FileType.Folder)
+                                        thumbnail = EditorGUIUtility.IconContent("Folder Icon").image as Texture2D;
+                                    thumbnail = AssetPreview.GetMiniThumbnail(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path));
+                                }
+                                return thumbnail;
+                            }
+                        }
+                        [SerializeField]
+                        private bool selscted;
+                        public bool Selected { get { return selscted; } set { SetSelected(value); } }
+                        private void SetSelected(bool sel)
+                        {
+                            if (this.selscted == sel) return;
+                            if (fileType == FileType.InValidFile) return;
+
+                            this.selscted = sel;
+                            for (int i = 0; i < SubFiles.Count; i++)
+                            {
+                                SubFiles[i].SetSelected(sel);
+                            }
+                        }
+
+
+                        public List<SubFile> SubFiles = new List<SubFile>();
+                        public SubFile() { }
+                        public SubFile(bool selected, string path, string name, FileType fileType)
+                        {
+                            this.selscted = selected;
+                            this.path = path;
+                            this.name = name;
+                            this.fileType = fileType;
+                        }
+                        public void SetSubAssetPaths()
+                        {
+                            if (fileType == FileType.Folder)
+                            {
+                                path.GetSubDirs().ForEach((dirName) =>
+                                {
+                                    SubFile asset = new SubFile(false,
+                                        path.CombinePath(dirName),
+                                        dirName,
+                                        FileType.Folder);
+                                    asset.SetSubAssetPaths();
+                                    SubFiles.Add(asset);
+                                });
+                                path.GetSubFiles(false).ForEach((fileName) =>
+                                {
+                                    if (fileName.Contains(".meta")) return;
+                                    bool valid = fileName.EndsWith(".cs");
+                                    SubFile asset = new SubFile(false,
+                                        fileName.ToAssetsPath(),
+                                        fileName.GetFileNameWithoutExtend(),
+                                        valid ? FileType.InValidFile : FileType.ValidFile);
+                                    asset.SetSubAssetPaths();
+                                    SubFiles.Add(asset);
+                                });
+                            }
+                        }
+                    }
+                    public enum CollectType
+                    {
+                        ABName,
+                        DirName,
+                        FileName,
+                        Scene
+                    }
+                    public CollectType type;
+                    public string path;
+                    public string bundle;
+                    public SubFile subAsset;
+                    public Collection() { }
+                    public Collection(string path)
+                    {
+                        this.path = path;
+                        SetSubAssetPaths();
+                    }
+                    private void SetSubAssetPaths()
+                    {
+                        subAsset = new SubFile(false, path, Path.GetFileName(path), SubFile.FileType.Folder);
+                        subAsset.SetSubAssetPaths();
+                    }
+
+                    public List<string> GetSubAssetPaths()
+                    {
+                        List<string> result = new List<string>();
+                        GetSubAssetPaths(subAsset, result);
+                        return result;
+                    }
+                    private void GetSubAssetPaths(SubFile subAsset, List<string> result)
+                    {
+                        if (subAsset.fileType != SubFile.FileType.Folder && subAsset.Selected)
+                            result.Add(subAsset.path);
+                        for (int i = 0; i < subAsset.SubFiles.Count; i++)
+                            GetSubAssetPaths(subAsset.SubFiles[i], result);
+                    }
+                }
+                public List<Collection> collection = new List<Collection>();
+                public void Add(string path)
+                {
+                    for (int i = 0; i < collection.Count; i++)
+                    {
+                        if (path.Contains(collection[i].path))
+                            return;
+                    }
+                    Collection collect = new Collection(path);
+                    collection.Add(collect);
+                }
+                public void Remove(Collection item)
+                {
+                    if (collection.Contains(item))
+                    {
+                        collection.Remove(item);
+                    }
+                }
             }
-            public virtual void OnDisable() { }
+
+            [Serializable]
+            public class BuiidCollection
+            {
+                [Serializable]
+                public class AssetBundleBuild_Class
+                {
+                    public string assetBundleName;
+                    public string assetBundleVariant;
+                    public List<string> assetNames = new List<string>();
+                    public List<string> addressableNames = new List<string>();
+
+                    public bool CrossRefence;
+                    public long FileLength;
+                    public string Size;
+                    public static implicit operator AssetBundleBuild(AssetBundleBuild_Class _class)
+                    {
+                        AssetBundleBuild build = new AssetBundleBuild();
+                        build.assetBundleName = _class.assetBundleName;
+                        build.assetBundleVariant = _class.assetBundleVariant;
+                        build.assetNames = _class.assetNames.ToArray();
+                        return build;
+                    }
+                    public static implicit operator AssetBundleBuild_Class(AssetBundleBuild _struct)
+                    {
+                        return new AssetBundleBuild_Class()
+                        {
+                            assetBundleName = _struct.assetBundleName,
+                            assetBundleVariant = _struct.assetBundleVariant,
+                            assetNames = _struct.assetNames.ToList(),
+                            addressableNames = _struct.addressableNames != null ? _struct.addressableNames.ToList() : null
+                        };
+                    }
+                }
+                [Serializable]
+                public class Deprndences
+                {
+                    public string assetPath;
+                    public string assetName { get { return assetPath.GetFileNameWithoutExtend(); } }
+                    public Texture2D thumbnail { get { return AssetPreview.GetMiniThumbnail(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath)); } }
+                    public string bundleName;
+
+                    public string size;
+                    public long fileLength;
+                    [SerializeField]
+                    public List<string> bundles = new List<string>();
+                }
+                [SerializeField]
+                public List<Deprndences> dps = new List<Deprndences>();
+                public List<AssetBundleBuild_Class> abbs = new List<AssetBundleBuild_Class>();
+
+                private Deprndences ContainsAsset(string assetpath)
+                {
+                    for (int i = 0; i < dps.Count; i++)
+                    {
+                        if (dps[i].assetPath == assetpath)
+                        {
+                            return dps[i];
+                        }
+                    }
+                    return default(Deprndences);
+                }
+                private AssetBundleBuild_Class ContainsBundle(string bundleName)
+                {
+                    for (int i = 0; i < abbs.Count; i++)
+                    {
+                        if (abbs[i].assetBundleName == bundleName)
+                        {
+                            return abbs[i];
+                        }
+                    }
+                    return default(AssetBundleBuild_Class);
+                }
+
+                public void RemoveBundle(string bundleName)
+                {
+                    AssetBundleBuild_Class item = ContainsBundle(bundleName);
+                    if (item == null)
+                        Debug.Log("no Bundle");
+                    else
+                    {
+                        abbs.Remove(item);
+                        BuildsToDps();
+                    }
+                }
+                public void RemoveBundles(string[] bundleName)
+                {
+                    for (int i = 0; i < bundleName.Length; i++)
+                    {
+                        AssetBundleBuild_Class item = ContainsBundle(bundleName[i]);
+                        if (item == null)
+                            Debug.Log("no Bundle");
+                        else
+                            abbs.Remove(item);
+                    }
+                    BuildsToDps();
+                }
+                public void RemoveAsset(string bundleName, string AssetName)
+                {
+                    AssetBundleBuild_Class item = ContainsBundle(bundleName);
+                    if (item == null)
+                        Debug.Log("no Bundle");
+                    else
+                        for (int i = item.assetNames.Count - 1; i >= 0; i--)
+                            if (item.assetNames[i] == AssetName)
+                                item.assetNames.RemoveAt(i);
+                    if (item.assetNames.Count == 0)
+                        abbs.Remove(item);
+                    BuildsToDps();
+                }
+                public void RemoveAssets(string bundleName, string[] AssetName)
+                {
+                    AssetBundleBuild_Class item = ContainsBundle(bundleName);
+                    if (item == null)
+                        Debug.Log("no Bundle");
+                    else
+                    {
+                        AssetName.ForEach((assetname) => {
+
+                            for (int i = item.assetNames.Count - 1; i >= 0; i--)
+                                if (item.assetNames[i] == assetname)
+                                    item.assetNames.RemoveAt(i);
+                        });
+                    }
+                    BuildsToDps();
+                }
+
+                public List<AssetBundleBuild> GetAssetBundleBuilds()
+                {
+                    return abbs.ConvertAll<AssetBundleBuild>((item) => { return item; });
+                }
+                public void ReadAssetbundleBuild(List<AssetBundleBuild> list)
+                {
+                    abbs.Clear();
+                    dps.Clear();
+                    list.ReverseForEach((item) =>
+                    {
+                        abbs.Add(item);
+                    });
+                    BuildsToDps();
+                }
+
+                private void BuildsToDps()
+                {
+                    dps.Clear();
+                    abbs.ReverseForEach((buildItem) => {
+                        buildItem.CrossRefence = false;
+                        buildItem.FileLength = 0;
+                        for (int i = 0; i < buildItem.assetNames.Count; i++)
+                        {
+                            string assetpath = buildItem.assetNames[i];
+                            Deprndences info = ContainsAsset(assetpath);
+                            if (info == null)
+                            {
+                                info = new Deprndences();
+                                info.assetPath = assetpath;
+                                info.fileLength = IO.GetFileLength(assetpath);
+                                info.size = IO.GetFileSize(info.fileLength);
+                                AssetImporter importer = AssetImporter.GetAtPath(assetpath);
+                                info.bundleName = importer.assetBundleName + "." + importer.assetBundleVariant;
+                                dps.Add(info);
+                            }
+                            else
+                            {
+                                buildItem.CrossRefence = true;
+                            }
+                            info.bundles.Add(buildItem.assetBundleName);
+                            buildItem.FileLength += info.fileLength;
+                        }
+                        buildItem.Size = IO.GetFileSize(buildItem.FileLength);
+
+
+                    });
+
+                }
+            }
+
+            public Collections colect = new Collections();
+            public BuiidCollection build = new BuiidCollection();
         }
-        private class ToolGUI : GUIBase,ILayoutGUIDrawer
+
+        private class ToolGUI : GUIBase,ILayoutGUI
         {
-            private ABBuiidInfo ABBuiidInfo { get { return _window.Info.ABBuiidInfo; } }
+            private WindowMemory.BuiidCollection buildCollection { get { return _window.Info.build; } }
 
             public override void OnGUI(Rect position)
             {
                 base.OnGUI(position);
                 this.BeginArea(position)
-                        .Label("BuildSetting")
+                        .Label("BuildSetting",GUIStyles.Get("LargeBoldLabel"))
                         .Label("", GUIStyles.Get("IN Title"), GUILayout.Height(5))
-                        .Label("Build  Target:")
-                        .Label(EditorUserBuildSettings.activeBuildTarget.ToString())
-                        .Label("", GUIStyles.Get("IN Title"), GUILayout.Height(5))
-                        .Label("AssetBundle OutPath:")
-                        .Label("Assets/../AssetBundles")
-                        .Label("", GUIStyles.Get("IN Title"), GUILayout.Height(5))
-                        .Label("Manifest FilePath:")
-                        .Label(ABTool.configPath)
-                        .Label("", GUIStyles.Get("IN Title"), GUILayout.Height(5))
-                        .Space(10)
-                        .Label("LoadSetting In Editor")
+                        .LabelField("Build Target:",EditorUserBuildSettings.activeBuildTarget.ToString())
+                        .LabelField("Output Path:", ABTool.assetsOutPutPath.ToAbsPath())
+                        .LabelField("Manifest Path:", ABTool.configPath)
+                        .LabelField("Version Path:", ABTool.versionPath)
                         .Pan(()=> {
-                            ABTool.testmode = EditorGUILayout.Toggle(new GUIContent("AssetDataBase Load"), ABTool.testmode);
+                            ABTool.testmode = EditorGUILayout.Toggle(new GUIContent("Test Mode"), ABTool.testmode);
                         })
+                        .Label("", GUIStyles.Get("IN Title"), GUILayout.Height(5))
                         .Space(10)
                         .Button(() => {
                             Build.DeleteBundleFiles();
                         }, "Clear Bundle Files")
                         .Button(() => {
-                            Build.BuildManifest(ABTool.configPath, ABBuiidInfo.GetAssetBundleBuilds());
+                            Build.BuildManifest(ABTool.configPath, buildCollection.GetAssetBundleBuilds());
                         }, "Build Manifest")
                         .Button(() => {
-                            Build.BuildManifest(ABTool.configPath, ABBuiidInfo.GetAssetBundleBuilds());
-                            Build.BuildAssetBundles(ABBuiidInfo.GetAssetBundleBuilds(), EditorUserBuildSettings.activeBuildTarget);
+                            Build.BuildManifest(ABTool.configPath, buildCollection.GetAssetBundleBuilds());
+                            Build.BuildAssetBundles(buildCollection.GetAssetBundleBuilds(), EditorUserBuildSettings.activeBuildTarget);
                             EditorTools.OpenFloder(ABTool.assetsDir);
                         }, "Build AssetBundle")
                         .Button(() => {
+                            Build.ClearVersions();
+                        }, "Clear Versions")
+                        .Button(() => {
                             Build.CopyBundleFilesTo(Application.streamingAssetsPath);
-                        }, "copy to Stream")
+                        }, "Copy Bundles to streamingAssetsPath")
+                        .Space(10)
                     .EndArea();
             }
         }
-        private class DirCollectGUI : GUIBase, ILayoutGUIDrawer, IRectGUIDrawer
+        private class DirCollectGUI : GUIBase, ILayoutGUI, IRectGUI
         {
-            public class AssetChooseWindow : PopupWindowContent, IRectGUIDrawer, ILayoutGUIDrawer
+            public class AssetChooseWindow : PopupWindowContent, IRectGUI, ILayoutGUI
             {
-                public ABDirCollectItem.ABSubFile assetinfo;
+                public WindowMemory.Collections.Collection.SubFile assetinfo;
                 public override void OnGUI(Rect rect)
                 {
                     if (assetinfo == null) return;
@@ -86,12 +403,12 @@ namespace IFramework.Hotfix.AB
                 }
                 private Vector2 scroll;
 
-                private void Draw(ABDirCollectItem.ABSubFile assetinfo, float offset)
+                private void Draw(WindowMemory.Collections.Collection.SubFile assetinfo, float offset)
                 {
                     this.DrawHorizontal(() =>
                     {
                         this.Space(offset);
-                        if (assetinfo.fileType == ABDirCollectItem.ABSubFile.FileType.InValidFile)
+                        if (assetinfo.fileType == WindowMemory.Collections.Collection.SubFile.FileType.InValidFile)
                             GUI.enabled = false;
                         bool s = assetinfo.Selected;
                         this.Toggle(ref s, new GUIContent(assetinfo.ThumbNail), GUILayout.Height(16), GUILayout.Width(40));
@@ -121,7 +438,7 @@ namespace IFramework.Hotfix.AB
             private Vector2 ScrollPos;
             private AssetChooseWindow chosseWindow=new AssetChooseWindow();
             private TableViewCalculator tableViewCalc=new TableViewCalculator();
-            private ABDirCollect DirCollect { get { return _window.Info.DirCollect; } }
+            private WindowMemory.Collections DirCollect { get { return _window.Info.colect; } }
             private ListViewCalculator.ColumnSetting[] Setting
             {
                 get
@@ -165,7 +482,7 @@ namespace IFramework.Hotfix.AB
             }
             private void ListView(Event e)
             {
-                tableViewCalc.Calc(position, new Vector2(position.x, position.y + lineHeight), ScrollPos, lineHeight, DirCollect.DirCollectItems.Count, Setting);
+                tableViewCalc.Calc(position, new Vector2(position.x, position.y + lineHeight), ScrollPos, lineHeight, DirCollect.collection.Count, Setting);
                 if (Event.current.type == EventType.Repaint)
                     GUIStyles.Get(EntryBackodd).Draw(tableViewCalc.position, false, false, false, false);
 
@@ -202,13 +519,13 @@ namespace IFramework.Hotfix.AB
                             _window.Repaint();
                         }
 
-                        ABDirCollectItem item = DirCollect.DirCollectItems[i];
+                        var item = DirCollect.collection[i];
 
-                        int index = (int)item.CollectType;
+                        int index = (int)item.type;
                         this.Popup(tableViewCalc.rows[i][CollectType].position,
                                     ref index,
-                                    Enum.GetNames(typeof(ABDirCollectItem.ABDirCollectType)));
-                        item.CollectType = (ABDirCollectItem.ABDirCollectType)index;
+                                    Enum.GetNames(typeof(WindowMemory.Collections.Collection.CollectType)));
+                        item.type = (WindowMemory.Collections.Collection.CollectType)index;
                         this.Button(() =>
                         {
                             chosseWindow.assetinfo = item.subAsset;
@@ -216,9 +533,9 @@ namespace IFramework.Hotfix.AB
                         }
                         , tableViewCalc.rows[i][SelectButton].position, SelectButton);
 
-                        this.Label(tableViewCalc.rows[i][SearchPath].position, item.SearchPath);
-                        if (item.CollectType == ABDirCollectItem.ABDirCollectType.ABName)
-                            this.TextField(tableViewCalc.rows[i][BundleName].position, ref item.BundleName);
+                        this.Label(tableViewCalc.rows[i][SearchPath].position, item.path);
+                        if (item.type ==  WindowMemory.Collections.Collection.CollectType.ABName)
+                            this.TextField(tableViewCalc.rows[i][BundleName].position, ref item.bundle);
                     }
                 }, tableViewCalc.view,ref ScrollPos,tableViewCalc.content, false, false);
 
@@ -265,7 +582,7 @@ namespace IFramework.Hotfix.AB
                         for (int i = tableViewCalc.rows.Count - 1; i >= 0; i--)
                         {
                             if (tableViewCalc.rows[i].selected)
-                                DirCollect.RemoveCollectItem(DirCollect.DirCollectItems[i]);
+                                DirCollect.Remove(DirCollect.collection[i]);
                         }
                         _window.UpdateInfo();
                     });
@@ -281,11 +598,11 @@ namespace IFramework.Hotfix.AB
             {
                 if (string.IsNullOrEmpty(path) || !path.Contains("Assets")) return;
                 if (!Directory.Exists(path)) return;
-                DirCollect.AddCollectItem(path);
+                DirCollect.Add(path);
                 _window.UpdateInfo();
             }
         }
-        private class AssetBundleBulidGUI : GUIBase, IRectGUIDrawer, ILayoutGUIDrawer
+        private class AssetBundleBulidGUI : GUIBase, IRectGUI, ILayoutGUI
         {
             private const string ABBWin = "AssetBundleBuild";
             private const string ABBItemWin = "ABBItemWin";
@@ -293,9 +610,9 @@ namespace IFramework.Hotfix.AB
             private const string ABBContentItemWin = "ABBContentItem";
             private const float LineHeight = 20;
 
-            public AssetBundleBuild_Class ChossedABB;
-            public ABDeprndence ChoosedAsset;
-            private List<AssetBundleBuild_Class> AssetbundleBuilds { get { return _window.Info.ABBuiidInfo.AssetbundleBuilds; } }
+            public WindowMemory.BuiidCollection.AssetBundleBuild_Class ChossedABB;
+            public WindowMemory.BuiidCollection.Deprndences ChoosedAsset;
+            private List<WindowMemory.BuiidCollection.AssetBundleBuild_Class> AssetbundleBuilds { get { return _window.Info.build.abbs; } }
 
             private const string ABName = "ABName";
             private const string RefCount = "RefCount";
@@ -326,7 +643,7 @@ namespace IFramework.Hotfix.AB
 
             private Vector2 ABBContentScrollPos;
             private TableViewCalculator ABBContentTable = new TableViewCalculator();
-            private List<ABDeprndence> dpInfo { get { return _window.Info.ABBuiidInfo.Dependences; } }
+            private List<WindowMemory.BuiidCollection.Deprndences> dpInfo { get { return _window.Info.build.dps; } }
 
             private const string Preview = "Preview";
             private const string AssetName = "AssetName";
@@ -420,23 +737,34 @@ namespace IFramework.Hotfix.AB
                                 e.button == 0 && e.clickCount == 1 &&
                                 ABBListViewCalc.rows[i].position.Contains(e.mousePosition))
                         {
-                            ABBListViewCalc.ControlSelectRow(i);
-                            _window.Repaint();
+                            if (rect.Contains(e.mousePosition))
+                            {
+                                ABBListViewCalc.ControlSelectRow(i);
+                                _window.Repaint();
+                            }
+                
                         }
                         else if (e.modifiers == EventModifiers.Shift &&
                                         e.button == 0 && e.clickCount == 1 &&
                                         ABBListViewCalc.rows[i].position.Contains(e.mousePosition))
                         {
-                            ABBListViewCalc.ShiftSelectRow(i);
-                            _window.Repaint();
+                            if (rect.Contains(e.mousePosition))
+                            {
+                                ABBListViewCalc.ShiftSelectRow(i);
+                                _window.Repaint();
+                            }
+                    
                         }
                         else if (e.button == 0 && e.clickCount == 1 &&
                                         ABBListViewCalc.rows[i].position.Contains(e.mousePosition)
                                       /*  && ListView.viewPosition.Contains(Event.current.mousePosition) */)
                         {
-                            ABBListViewCalc.SelectRow(i);
-                            ChossedABB = AssetbundleBuilds[i];
-                            _window.Repaint();
+                            if (rect.Contains(e.mousePosition))
+                            {
+                                ABBListViewCalc.SelectRow(i);
+                                ChossedABB = AssetbundleBuilds[i];
+                                _window.Repaint();
+                            }
                         }
 
                         GUIStyle style = i % 2 == 0 ? EntryBackEven : EntryBackodd;
@@ -506,13 +834,13 @@ namespace IFramework.Hotfix.AB
 
 
 
-            private ABDeprndence GetDpByName(string AssetPath)
+            private WindowMemory.BuiidCollection.Deprndences GetDpByName(string AssetPath)
             {
                 for (int i = 0; i < dpInfo.Count; i++)
                 {
-                    if (dpInfo[i].AssetPath == AssetPath) return dpInfo[i];
+                    if (dpInfo[i].assetPath == AssetPath) return dpInfo[i];
                 }
-                return default(ABDeprndence);
+                return default(WindowMemory.BuiidCollection.Deprndences);
             }
             private void ABBContentWinGUI(Rect rect)
             {
@@ -530,43 +858,53 @@ namespace IFramework.Hotfix.AB
                 {
                     for (int i = ABBContentTable.firstVisibleRow; i < ABBContentTable.lastVisibleRow + 1; i++)
                     {
-                        ABDeprndence asset = GetDpByName(ChossedABB.assetNames[i]);
+                        var asset = GetDpByName(ChossedABB.assetNames[i]);
                         GUIStyle style = i % 2 == 0 ? EntryBackEven : EntryBackodd;
 
                         if (e.type == EventType.Repaint)
                             style.Draw(ABBContentTable.rows[i].position, false, false, ABBContentTable.rows[i].selected, false);
 
-                        this.Label(ABBContentTable.rows[i][Size].position, asset.Size)
-                            .Label(ABBContentTable.rows[i][AssetName].position, asset.AssetName)
-                            .Label(ABBContentTable.rows[i][Preview].position, asset.ThumbNail)
-                            .Label(ABBContentTable.rows[i][Bundle].position, asset.BundleName)
+                        this.Label(ABBContentTable.rows[i][Size].position, asset.size)
+                            .Label(ABBContentTable.rows[i][AssetName].position, asset.assetName)
+                            .Label(ABBContentTable.rows[i][Preview].position, asset.thumbnail)
+                            .Label(ABBContentTable.rows[i][Bundle].position, asset.bundleName)
                             .Pan(() => {
-                                if (asset.AssetBundles.Count == 1)
+                                if (asset.bundles.Count == 1)
                                     this.Label(ABBContentTable.rows[i][CrossRef].position, EditorGUIUtility.IconContent("Collab"));
                                 else
-                                    this.Label(ABBContentTable.rows[i][CrossRef].position, asset.AssetBundles.Count.ToString(), GUIStyles.Get("CN CountBadge"));
+                                    this.Label(ABBContentTable.rows[i][CrossRef].position, asset.bundles.Count.ToString(), GUIStyles.Get("CN CountBadge"));
                             });
 
                         if (e.modifiers == EventModifiers.Control &&
                                 e.button == 0 && e.clickCount == 1 &&
                                 ABBContentTable.rows[i].position.Contains(Event.current.mousePosition))
                         {
-                            ABBContentTable.ControlSelectRow(i);
-                            _window.Repaint();
+                            if (rect.Contains(e.mousePosition))
+                            {
+                                ABBContentTable.ControlSelectRow(i);
+                                _window.Repaint();
+                            }
                         }
                         else if (e.modifiers == EventModifiers.Shift &&
                                         e.button == 0 &&e.clickCount == 1 &&
                                         ABBContentTable.rows[i].position.Contains(e.mousePosition))
                         {
-                            ABBContentTable.ShiftSelectRow(i);
-                            _window.Repaint();
+                            if (rect.Contains(e.mousePosition))
+                            {
+                                ABBContentTable.ShiftSelectRow(i);
+                                _window.Repaint();
+                            }
                         }
                         else if (e.button == 0 && e.clickCount == 1 &&
                                         ABBContentTable.rows[i].position.Contains(e.mousePosition))
                         {
-                            ABBContentTable.SelectRow(i);
-                            ChoosedAsset = asset;
-                            _window.Repaint();
+                            if (rect.Contains(e.mousePosition))
+                            {
+                                ABBContentTable.SelectRow(i);
+                                ChoosedAsset = asset;
+                                _window.Repaint();
+                            }
+
                         }
                     }
 
@@ -621,9 +959,9 @@ namespace IFramework.Hotfix.AB
             {
                 rect.DrawOutLine(2, Color.black);
                 if (ChoosedAsset == null) return;
-                ABBContentItemTableCalc.Calc(rect, new Vector2(rect.x, rect.y + LineHeight), ABBContentItemScrollPos, LineHeight, ChoosedAsset.AssetBundles.Count, ABBContentItemSetting);
-                this.Label(ABBContentItemTableCalc.titleRow[AssetName].position, ChoosedAsset.AssetPath)
-                    .Label(ABBContentItemTableCalc.titleRow[Preview].position, ChoosedAsset.ThumbNail);
+                ABBContentItemTableCalc.Calc(rect, new Vector2(rect.x, rect.y + LineHeight), ABBContentItemScrollPos, LineHeight, ChoosedAsset.bundles.Count, ABBContentItemSetting);
+                this.Label(ABBContentItemTableCalc.titleRow[AssetName].position, ChoosedAsset.assetPath)
+                    .Label(ABBContentItemTableCalc.titleRow[Preview].position, ChoosedAsset.thumbnail);
 
                 this.DrawScrollView(() =>
                 {
@@ -632,7 +970,7 @@ namespace IFramework.Hotfix.AB
                         GUIStyle style = i % 2 == 0 ? EntryBackEven : EntryBackodd;
                         if (Event.current.type == EventType.Repaint)
                             style.Draw(ABBContentItemTableCalc.rows[i].position, false, false, ABBContentItemTableCalc.rows[i].selected, false);
-                        this.Label(ABBContentItemTableCalc.rows[i][AssetName].position, ChoosedAsset.AssetBundles[i]);
+                        this.Label(ABBContentItemTableCalc.rows[i][AssetName].position, ChoosedAsset.bundles[i]);
                         //this.Label(table.Rows[i][Preview].Position, choo.ThumbNail);
                     }
                 }, ABBContentItemTableCalc.view,ref ABBContentItemScrollPos,ABBContentItemTableCalc.content, false, false);
@@ -659,7 +997,7 @@ namespace IFramework.Hotfix.AB
         private WindowType _windowType;
       
 
-        public ABEditorInfo Info;
+        public WindowMemory Info;
         private string EditorInfoPath;
         private AssetBundleBulidGUI abBulidWindow;
         private DirCollectGUI dirCollectWindow;
@@ -667,16 +1005,16 @@ namespace IFramework.Hotfix.AB
 
         private void DeleteBundle(string bundleName)
         {
-            Info.ABBuiidInfo.RemoveBundle(bundleName);
+            Info.build.RemoveBundle(bundleName);
         }
         private void RemoveAsset(string assetPath, string bundleName)
         {
-            Info.ABBuiidInfo.RemoveAsset(bundleName, assetPath);
+            Info.build.RemoveAsset(bundleName, assetPath);
         }
         private void UpdateInfo()
         {
-            File.WriteAllText(EditorInfoPath, Xml.ToXmlString(Info));
-            Info = Xml.ToObject<ABEditorInfo>(File.ReadAllText(EditorInfoPath));
+            File.WriteAllText(EditorInfoPath, Xml.ToXml(Info));
+            Info = Xml.FromXml<WindowMemory>(File.ReadAllText(EditorInfoPath));
         }
     }
     partial class AssetBundleWindow
@@ -685,8 +1023,8 @@ namespace IFramework.Hotfix.AB
         {
             EditorInfoPath = EditorEnv.memoryPath.CombinePath("AssetBundleEditorInfo.xml");
             if (!File.Exists(EditorInfoPath))
-                File.WriteAllText(EditorInfoPath, Xml.ToXmlString(new ABEditorInfo()));
-            Info = Xml.ToObject<ABEditorInfo>(File.ReadAllText(EditorInfoPath));
+                File.WriteAllText(EditorInfoPath, Xml.ToXml(new WindowMemory()));
+            Info = Xml.FromXml<WindowMemory>(File.ReadAllText(EditorInfoPath));
 
 
             if (toolWindow == null)
@@ -698,38 +1036,38 @@ namespace IFramework.Hotfix.AB
         }
         private List<Collecter> LoadCollecters()
         {
-            var collecters = Info.DirCollect.DirCollectItems.ConvertAll<Collecter>((item) =>
+            var collecters = Info.colect.collection.ConvertAll<Collecter>((item) =>
             {
-                if (string.IsNullOrEmpty(item.SearchPath)) return null;
-                switch (item.CollectType)
+                if (string.IsNullOrEmpty(item.path)) return null;
+                switch (item.type)
                 {
-                    case ABDirCollectItem.ABDirCollectType.ABName:
-                        if (!string.IsNullOrEmpty(item.BundleName))
+                    case WindowMemory.Collections.Collection.CollectType.ABName:
+                        if (!string.IsNullOrEmpty(item.bundle))
                         {
                             return new ABNameCollecter()
                             {
-                                bundleName = item.BundleName,
-                                searchPath = item.SearchPath,
+                                bundleName = item.bundle,
+                                searchPath = item.path,
                                 MeetFiles = item.GetSubAssetPaths()
                             };
                         }
                         return null;
-                    case ABDirCollectItem.ABDirCollectType.DirName:
+                    case WindowMemory.Collections.Collection.CollectType.DirName:
                         return new DirNameCollecter()
                         {
-                            searchPath = item.SearchPath,
+                            searchPath = item.path,
                             MeetFiles = item.GetSubAssetPaths()
                         };
-                    case ABDirCollectItem.ABDirCollectType.FileName:
+                    case WindowMemory.Collections.Collection.CollectType.FileName:
                         return new FileNameCollecter()
                         {
-                            searchPath = item.SearchPath,
+                            searchPath = item.path,
                             MeetFiles = item.GetSubAssetPaths()
                         };
-                    case ABDirCollectItem.ABDirCollectType.Scene:
+                    case WindowMemory.Collections.Collection.CollectType.Scene:
                         return new ScenesCollecter()
                         {
-                            searchPath = item.SearchPath,
+                            searchPath = item.path,
                             MeetFiles = item.GetSubAssetPaths()
                         };
                     default:
@@ -757,7 +1095,8 @@ namespace IFramework.Hotfix.AB
                             {
                                 abBulidWindow.ChoosedAsset = null;
                                 abBulidWindow.ChossedABB = null;
-                                Info.ABBuiidInfo.ReadAssetbundleBuild(Collect.GetCollection(ABTool.configPath));
+                                var abbs = Collect.GetCollection(ABTool.configPath);
+                                Info.build.ReadAssetbundleBuild(abbs);
                                 UpdateInfo();
                             },20,()=> { return _windowType == WindowType.AssetBundleBuild; })
                             //.Button(new GUIContent(), (rect) =>

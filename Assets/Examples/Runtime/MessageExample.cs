@@ -40,9 +40,11 @@ namespace IFramework_Demo
 
             Debug.Log(Framework.Version);
 
-            Debug.Log(Message.Publish<Pub>( 100, null));
-
+            Message.Publish<Pub>(100, null);
         }
-       
+        private void Update()
+        {
+            Message.Update();
+        }
     }
 }

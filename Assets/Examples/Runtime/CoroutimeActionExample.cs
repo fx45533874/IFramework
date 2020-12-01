@@ -29,14 +29,14 @@ namespace IFramework_Demo
                     {
                         s.TimeSpan(new TimeSpan(0, 0, 5))
                          .Event(() => { Log.L("GG"); })
-                         .OnCompelete(() => { Log.L(1231); });
-                    }, false)
+                         .OnCompelete(() => { Log.L("comp"); })
+                         .OnBegin(()=> { Log.L("begin"); });
+                    })
                     ;
                 },2)
                 .TimeSpan(new TimeSpan(0, 0, 5))
                 .OnCompelete((ss) => { /*ss.Reset();*/ })
-                .OnDispose((ss) => { Log.L("dispose"); })
-                .OnRecyle(() => { Log.L(123132); })
+                .OnRecyle(() => { Log.L(""); })
                 .Run(mo);
         }
         private void Update()

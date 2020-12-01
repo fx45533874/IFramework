@@ -29,7 +29,7 @@ namespace IFramework
     [OnEnvironmentInit(EnvironmentType.Ev0)]
     static class EditorWindowTool
     {
-        public enum DockPosition
+        public enum DockType
         {
             Left,
             Top,
@@ -37,7 +37,7 @@ namespace IFramework
             Bottom
         }
 
-        public class EditorWindowItem
+        public class Entity
         {
             public string searchName { get; private set; }
             public Type type { get; private set; }
@@ -73,7 +73,7 @@ namespace IFramework
                 }
             }
 
-            public EditorWindowItem(Type type, string searchName = "")
+            public Entity(Type type, string searchName = "")
             {
                 this.type = type;
                 this.searchName = string.IsNullOrEmpty(searchName) ? type.FullName : searchName;
@@ -108,65 +108,62 @@ namespace IFramework
             }
         }
 
-        private static List<EditorWindowItem> _windows;
-        public static List<EditorWindowItem> windows { get { return _windows; } }
+        private static List<Entity> _windows;
+        public static List<Entity> windows { get { return _windows; } }
         static FieldInfo m_Parent;
 
         static EditorWindowTool()
         {
             Type type = typeof(EditorWindow);
             m_Parent = type.GetField("m_Parent", BindingFlags.Instance | BindingFlags.NonPublic);
-            _windows = new List<EditorWindowItem>();
+            _windows = new List<Entity>();
             var em = type.GetSubTypesInAssemblys().GetEnumerator();
             while (em.MoveNext())
             {
                 var _type = em.Current;
                 if (_type.IsAbstract || !_type.IsDefined(typeof(EditorWindowCacheAttribute), false)) continue;
                 EditorWindowCacheAttribute attr = _type.GetCustomAttributes(typeof(EditorWindowCacheAttribute), false).First() as EditorWindowCacheAttribute;
-                windows.Add(new EditorWindowItem(_type, attr.searchName));
+                windows.Add(new Entity(_type, attr.searchName));
             }
             windows.Sort((a, b) => { return a.searchName.CompareTo(b.searchName); });
-            AddDefautEditorWindows();
+            CollectUnityWndows();
         }
-
-
-        private static void AddDefautEditorWindows()
+        private static void CollectUnityWndows()
         {
-            System.Reflection.Assembly assembly = typeof(EditorWindow).Assembly;
             typeof(EditorWindow).GetSubTypesInAssemblys().ForEach((type) =>
             {
                 if (type.Namespace != null && type.Namespace.Contains("UnityEditor") && !type.IsAbstract)
                 {
-                    windows.Add(new EditorWindowItem(type, type.Name));
+                    windows.Add(new Entity(type, type.Name));
                 }
             });
         }
         public static bool Exist(string name)
         {
-            return FindInfo(name) != null;
+            return FindEntity(name) != null;
         }
-        public static EditorWindowItem FindInfo(string name)
+        public static Entity FindEntity(string name)
         {
             return windows.Find((info) => { return info.searchName == name; });
         }
         public static EditorWindow Find(string name)
         {
-            EditorWindowItem item = FindInfo(name);
+            Entity item = FindEntity(name);
             return item == null ? null : item.Find();
         }
         public static EditorWindow Create(string name)
         {
-            EditorWindowItem item = FindInfo(name);
+            Entity item = FindEntity(name);
             return item == null ? null : item.Create();
         }
         public static EditorWindow[] FindAll(string name)
         {
-            EditorWindowItem item = FindInfo(name);
+            Entity item = FindEntity(name);
             return item == null ? null : item.FindAll();
         }
         public static EditorWindow FindOrCreate(string name)
         {
-            EditorWindowItem item = FindInfo(name);
+            Entity item = FindEntity(name);
             return item == null ? null : item.FindOrCreate();
         }
 
@@ -176,15 +173,15 @@ namespace IFramework
         {
             return new Rect(Vector2.zero, self.position.size);
         }
-        /// <summary>
-        /// Docks the "docked" window to the "anchor" window at the given position
-        /// </summary>
-        public static void DockWindow(this EditorWindow self, EditorWindow child, DockPosition position)
+        public static void Dock(this EditorWindow self, EditorWindow child, DockType type)
         {
             var anchorParent = GetParentOf(self);
             SetDragSource(anchorParent, GetParentOf(child));
-            PerformDrop(GetWindowOf(anchorParent), child, GetFakeMousePosition(self, position));
+            PerformDrop(GetWindowOf(anchorParent), child, GetFakeMousePosition(self, type));
         }
+
+
+
         private static object GetParentOf(object target)
         {
             return m_Parent.GetValue(target);
@@ -206,10 +203,6 @@ namespace IFramework
 
             var dragMethod = rootSplitView.GetType().GetMethod("DragOver", BindingFlags.Instance | BindingFlags.Public);
             var dropMethod = rootSplitView.GetType().GetMethod("PerformDrop", BindingFlags.Instance | BindingFlags.Public);
-
-            //var dropInfo = dragMethod.Invoke(rootSplitView, new object[] { child, screenPoint });
-
-
             var dropInfo = dragMethod.Invoke(rootSplitView, new object[] { child, screenPoint });
             if (dropInfo == null) return;
             FieldInfo fi = dropInfo.GetType().GetField("dropArea");
@@ -217,20 +210,16 @@ namespace IFramework
 
             dropMethod.Invoke(rootSplitView, new object[] { child, dropInfo, screenPoint });
         }
-        private static Vector2 GetFakeMousePosition(EditorWindow wnd, DockPosition position)
+        private static Vector2 GetFakeMousePosition(EditorWindow wnd, DockType position)
         {
             Vector2 mousePosition = Vector2.zero;
-
-            // The 20 is required to make the docking work.
-            // Smaller values might not work when faking the mouse position.
             switch (position)
             {
-                case DockPosition.Left: mousePosition = new Vector2(20, wnd.position.size.y / 2); break;
-                case DockPosition.Top: mousePosition = new Vector2(wnd.position.size.x / 2, 20); break;
-                case DockPosition.Right: mousePosition = new Vector2(wnd.position.size.x - 20, wnd.position.size.y / 2); break;
-                case DockPosition.Bottom: mousePosition = new Vector2(wnd.position.size.x / 2, wnd.position.size.y - 20); break;
+                case DockType.Left: mousePosition = new Vector2(20, wnd.position.size.y / 2); break;
+                case DockType.Top: mousePosition = new Vector2(wnd.position.size.x / 2, 20); break;
+                case DockType.Right: mousePosition = new Vector2(wnd.position.size.x - 20, wnd.position.size.y / 2); break;
+                case DockType.Bottom: mousePosition = new Vector2(wnd.position.size.x / 2, wnd.position.size.y - 20); break;
             }
-
             return new Vector2(wnd.position.x + mousePosition.x, wnd.position.y + mousePosition.y);
         }
     }

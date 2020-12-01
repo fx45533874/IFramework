@@ -20,7 +20,7 @@ using Object = UnityEngine.Object;
 namespace IFramework
 {
     [CustomEditor(typeof(ScriptCreater))]
-    public class ScriptCreaterEditor : Editor,ILayoutGUIDrawer
+    class ScriptCreaterEditor : Editor, ILayoutGUI
     {
         private static string originScriptPath;
         private static ScriptCreater _scriptCreater;
@@ -29,7 +29,7 @@ namespace IFramework
             originScriptPath = EditorEnv.formatScriptsPath.CombinePath(@"ScriptCreaterFormatScript.txt");
             _scriptCreater = this.target as ScriptCreater;
         }
-      
+
 
         public override void OnInspectorGUI()
         {
@@ -56,25 +56,6 @@ namespace IFramework
                         _scriptCreater.CreatePath = info.paths[0];
                 })
                 .Space(10)
-                .Toggle("Create Prefab", ref _scriptCreater.isCreatePrefab)
-                .Pan(()=> {
-                    if (_scriptCreater.isCreatePrefab)
-                    {
-                        this.ETextField("Prefab Name", ref _scriptCreater.prefabName);
-                        this.DrawHorizontal(() =>
-                        {
-                            GUILayout.Label(new GUIContent("Prefab Path:", "Drag Floder To Box"));
-                            Rect rect = EditorGUILayout.GetControlRect();
-                            rect.DrawOutLine(2, Color.black);
-                            EditorGUI.LabelField(rect, _scriptCreater.prefabDirectory);
-                            if (!rect.Contains(Event.current.mousePosition)) return;
-                            var info = EditorTools.DragAndDropTool.Drag(Event.current, rect);
-                            if (info.paths.Length > 0 && info.compelete && info.enterArera && info.paths[0].IsDirectory())
-                                _scriptCreater.prefabDirectory = info.paths[0];
-                        });
-                    }
-                })
-                .Space(10)
                 .DrawHorizontal(() => {
 
                     if (GUILayout.Button("Build", GUILayout.Height(25)))
@@ -93,8 +74,11 @@ namespace IFramework
                         DestroyImmediate(_scriptCreater);
                     }
                 });
-            serializedObject.Update();
-
+            try
+            {
+                serializedObject.Update();
+            }
+            catch (Exception) { }
         }
         private bool BuildCheck()
         {
@@ -108,13 +92,13 @@ namespace IFramework
                     EditorUtility.DisplayDialog("Err", "Field Name Should be diferent With ScriptName", "ok");
                     return false;
                 }
-                var sameFields= _scriptCreater.scriptMarks.ToList().FindAll((__sm) => { return _sm.fieldName == __sm.fieldName; });
-                if (sameFields.Count>1)
+                var sameFields = _scriptCreater.scriptMarks.ToList().FindAll((__sm) => { return _sm.fieldName == __sm.fieldName; });
+                if (sameFields.Count > 1)
                 {
                     EditorUtility.DisplayDialog("Err", "Can't Exist Same Name Field", "ok");
                     return false;
                 }
-                
+
             }
 
             CreateOriginIfNull();
@@ -122,19 +106,6 @@ namespace IFramework
             {
                 EditorUtility.DisplayDialog("Err", "Directory Not Exist ", "ok");
                 return false;
-            }
-            if (_scriptCreater.isCreatePrefab)
-            {
-                if (!Directory.Exists(_scriptCreater.prefabDirectory))
-                {
-                    EditorUtility.DisplayDialog("Err", "Prefab Directory Not Exist ", "ok");
-                    return false;
-                }
-                if (File.Exists(_scriptCreater.prefabPath))
-                {
-                    AssetDatabase.DeleteAsset(_scriptCreater.prefabPath);
-                    AssetDatabase.Refresh();
-                }
             }
             return true;
         }
@@ -193,9 +164,10 @@ namespace IFramework
             Assembly defaultAssembly = AppDomain.CurrentDomain.GetAssemblies()
                             .First(assembly => assembly.GetName().Name == "Assembly-CSharp");
             Type type = defaultAssembly.GetType(ProjectConfig.NameSpace + "." + EditorPrefs.GetString(ScriptNameKey));
-            GameObject gameObj = GameObject.Find(EditorPrefs.GetString(GameobjKey));
 
-            if (gameObj == null || type == null || gameObj.GetComponent<ScriptCreater>() == null)
+            ScriptCreater sc = GameObject.FindObjectsOfType<ScriptCreater>().ToList().Find((_sc) => { return _sc.name == EditorPrefs.GetString(GameobjKey); });
+
+            if (sc == null || type == null)
             {
                 if (EditorPrefs.HasKey(ScriptNameKey))
                     EditorPrefs.DeleteKey(ScriptNameKey);
@@ -206,24 +178,23 @@ namespace IFramework
                 return;
             }
             EditorUtility.DisplayProgressBar("Build Script  " + type.Name, "Don't do anything", 0.7f);
-            _scriptCreater = gameObj.GetComponent<ScriptCreater>();
 
-            ScriptMark[] scriptMarks = _scriptCreater.scriptMarks;
-            Component component = gameObj.GetComponent(type);
-            if (component == null) component = gameObj.AddComponent(type);
+            ScriptMark[] scriptMarks = sc.scriptMarks;
+            Component component = sc.GetComponent(type);
+            if (component == null) component = sc.gameObject.AddComponent(type);
             SerializedObject serialiedScript = new SerializedObject(component);
 
             foreach (var _sm in scriptMarks)
             {
-                serialiedScript.FindProperty(_sm.fieldName).objectReferenceValue = _sm.GetComponent(_sm.fieldType);
+                var _type = _sm.fieldType;
+                if (_type.StartsWith("UnityEngine.") && _type.LastIndexOf(".") == "UnityEngine".Length)
+                {
+                    _type = _type.Replace("UnityEngine.", "");
+                }
+                serialiedScript.FindProperty(_sm.fieldName).objectReferenceValue = _sm.GetComponent(_type);
             }
             serialiedScript.ApplyModifiedPropertiesWithoutUndo();
             //serialiedScript.Update();
-            if (_scriptCreater.isCreatePrefab)
-            {
-                EditorTools.CreatePrefab(gameObj, _scriptCreater.prefabPath);
-            }
-
 
 
             EditorPrefs.SetBool(IsCreateKey, false);
@@ -258,7 +229,7 @@ namespace IFramework
                          .Replace("#SCSCRIPTNAME#", Path.GetFileNameWithoutExtension(filePath))
                          .Replace("#SCDescription#", ReplaceDescription());
                 txt = txt.Replace("#SCField#", ReplaceField(txt));
-                txt = txt.Replace("#SCUsing#", ReplaceNamespace(txt));
+                txt = txt.Replace("#SCUsing#", ReplaceNamespace(txt)).ToUnixLineEndings();
 
                 EditorUtility.DisplayProgressBar("Build Script  " + spName, "Don't do anything", 0.2f);
 
@@ -312,18 +283,22 @@ namespace IFramework
                 for (int i = 0; i < _scriptCreater.scriptMarks.Length; i++)
                 {
                     var sm = _scriptCreater.scriptMarks[i];
-                    var comp = sm.GetComponent(sm.fieldType);
-                    NameSpaces.Add(comp.GetType().Namespace);
+                    var sp = sm.type.Namespace;
+                    if (!string.IsNullOrEmpty(sp))
+                    {
+
+                        NameSpaces.Add(sp);
+                    }
                 }
                 NameSpaces = NameSpaces.Distinct().ToList();
                 NameSpaces.ForEach((ns) => {
-                    string tmp= "using ".Append(ns);
+                    string tmp = "using ".Append(ns);
                     if (!txt.Contains(tmp))
                         res = res.Append(tmp).Append(";\n");
 
                 });
 
-                if ((txt.Contains("[SerializeField]")|| txt.Contains("MonoBehaviour")) && !res.Contains("using UnityEngine;"))
+                if ((txt.Contains("[SerializeField]") || txt.Contains("MonoBehaviour")) && !res.Contains("using UnityEngine;"))
                 {
                     res = res.Append("using UnityEngine;\n");
                 }

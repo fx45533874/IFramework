@@ -14,7 +14,7 @@ using UnityEngine.UI;
 
 namespace IFramework.UI
 {
-    public class UIEventArgs : FrameworkArgs
+    public class UIEventArgs : RecyclableObject
     {
         public enum Code
         {
@@ -34,6 +34,7 @@ namespace IFramework.UI
 
     public interface IGroups : IDisposable
     {
+        void Update();
         UIPanel FindPanel(string name);
         void InvokeViewState(UIEventArgs arg);
         void Subscribe(UIPanel panel);
@@ -43,7 +44,7 @@ namespace IFramework.UI
     {
         UIPanel Load(Type type, string name, UILayer layer = UILayer.Common, string path = "");
     }
-    public partial class UIModule
+    public partial class UIModule : IUIModule
     {
         public Canvas canvas { get; private set; }
         private RectTransform root;
@@ -180,7 +181,7 @@ namespace IFramework.UI
             return memory.Peek();
         }
     }
-    public partial class UIModule : FrameworkModule
+    public partial class UIModule : UpdateFrameworkModule
     {
         private IGroups _groups;
         public override int priority { get { return 80; } }
@@ -200,6 +201,11 @@ namespace IFramework.UI
                 _groups.Dispose();
             if (canvas != null)
                 GameObject.Destroy(canvas.gameObject);
+        }
+        protected override void OnUpdate()
+        {
+
+            _groups.Update();
         }
 
         public void AddLoader(IPanelLoader loader)
