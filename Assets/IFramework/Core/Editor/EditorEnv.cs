@@ -21,7 +21,6 @@ namespace IFramework
         public interface IFileInitializer
         {
             void Create();
-            void Subscribe();
         }
         public abstract class FileInitializer : IFileInitializer
         {
@@ -64,11 +63,6 @@ namespace IFramework
                     });
                 }
             }
-
-            public void Subscribe()
-            {
-                _fileInitializers.Add(this);
-            }
         }
         class ProjectFloderInitializer : FileInitializer
         {
@@ -81,6 +75,7 @@ namespace IFramework
                         "Assets/Project/Sources/Textures",
                         "Assets/Project/Sources/Images",
                         "Assets/Project/Scripts",
+                        "Assets/Project/Sences",
                         "Assets/Project/Resources",
                         "Assets/StreamingAssets",
                     };
@@ -88,8 +83,6 @@ namespace IFramework
 
             protected override List<string> files { get { return null; } }
         }
-
-        private static List<IFileInitializer> _fileInitializers = new List<IFileInitializer>();
 
         private const string _relativeCorePath = "Core";
         private static string _fpath;
@@ -114,7 +107,7 @@ namespace IFramework
                     string[] assetPaths = AssetDatabase.GetAllAssetPaths();
                     for (int i = 0; i < assetPaths.Length; i++)
                     {
-                        if (assetPaths[i].Contains(_relativeCorePath))
+                        if (assetPaths[i].Contains(frameworkName+"/"+ _relativeCorePath))
                         {
                             string tempPath = assetPaths[i];
                             int index = tempPath.IndexOf(_relativeCorePath);
@@ -158,7 +151,6 @@ namespace IFramework
         [InitializeOnLoadMethod]
         static void EditorEnvInit()
         {
-            _fileInitializers.Clear();
             UnityEngine.Debug.Log("FrameworkPath   right?   " + frameworkPath);
             Framework.CreateEnv("IFramework_Editor", envType).InitWithAttribute();
             assemblyCompilationStarted += (str) => {
@@ -171,18 +163,23 @@ namespace IFramework
 #if UNITY_2018_1_OR_NEWER
             PlayerSettings.allowUnsafeCode = true;
 #else
-          string  path = Application.dataPath.CombinePath("mcs.rsp");
+          string  path = UnityEngine.Application.dataPath.CombinePath("mcs.rsp");
             string content = "-unsafe";
             if (File.Exists(path) && path.ReadText(System.Text.Encoding.Default) == content) return;
                 path.WriteText(content, System.Text.Encoding.Default); 
             AssetDatabase.Refresh();
-            EditorUtil.ReOpen2();
+            EditorTools.Quit();
 #endif
-            new ProjectFloderInitializer().Subscribe();
-            _fileInitializers.ForEach(f => { f.Create(); });
-
-            //if (!EditorApplication.isUpdating)
-            //    AssetDatabase.Refresh();
+            typeof(IFileInitializer).GetSubTypesInAssemblys().ForEach((type) =>
+            {
+                if (!type.IsAbstract)
+                {
+                    (Activator.CreateInstance(type) as IFileInitializer).Create();
+                }
+            });
+             
+            if (!EditorApplication.isUpdating)
+                AssetDatabase.Refresh();
 
         }
     }

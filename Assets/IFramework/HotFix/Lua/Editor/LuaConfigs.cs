@@ -16,7 +16,6 @@ using XLua;
 
 namespace IFramework.Hotfix.Lua
 {  
-    [OnEnvironmentInit(EditorEnv.envType)]
 	public static class LuaConfigs
 	{
         class LuaFileInitializer : EditorEnv.FileInitializer
@@ -58,10 +57,6 @@ namespace IFramework.Hotfix.Lua
                 }
                 return true;
             }
-        }
-        static LuaConfigs()
-        {
-            new LuaFileInitializer().Subscribe();
         }
 
         [CSharpCallLua]

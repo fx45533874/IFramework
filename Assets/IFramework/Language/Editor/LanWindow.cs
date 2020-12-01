@@ -70,9 +70,7 @@ namespace IFramework.Language
         private const string Group = "Group";
         private CreateView createView = new CreateView();
         private GroupView group = new GroupView();
-        [SerializeField]
-        private bool mask = true;
-        private Color maskColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
+
         [SerializeField]
         private string tmpLayout;
         private const float ToolBarHeight = 17;
@@ -85,7 +83,7 @@ namespace IFramework.Language
         {
             public static LanWindow window;
             protected Rect position;
-            
+
             protected float TitleHeight { get { return Styles.Title.CalcHeight(titleContent, position.width); } }
             protected float smallBtnSize = 20;
             protected float describeWidth = 30;
@@ -169,7 +167,7 @@ namespace IFramework.Language
             {
                 for (int i = 1; i <= 2; i++)
                 {
-                    string userdata = i == 1 ? "Group" :  "CreateView";
+                    string userdata = i == 1 ? "Group" : "CreateView";
                     SubWinTree.TreeLeaf L = sunwin.CreateLeaf(new GUIContent(userdata));
                     L.userData = userdata;
                     sunwin.DockLeaf(L, SubWinTree.DockType.Left);
@@ -189,27 +187,16 @@ namespace IFramework.Language
             ToolBarTree = new ToolBarTree();
             ToolBarTree.DropDownButton(new GUIContent("Views"), Views, 60)
                             .FlexibleSpace()
-                            .Toggle(new GUIContent("mask"), m => mask = m, mask, 60)
-                            .Delegate((r) => {
-                                maskColor = EditorGUI.ColorField(r, maskColor);
-                            }, 80)
                             .Toggle(new GUIContent("Title"), (bo) => { sunwin.isShowTitle = bo; }, sunwin.isShowTitle, 60)
                             .Toggle(new GUIContent("Lock"), (bo) => { sunwin.isLocked = bo; }, sunwin.isLocked, 60);
 
         }
-
         private void OnGUI()
         {
             var rs = localPosition.Zoom(AnchorType.MiddleCenter, -2).HorizontalSplit(ToolBarHeight, 4);
             ToolBarTree.OnGUI(rs[0]);
             sunwin.OnGUI(rs[1]);
             this.minSize = sunwin.minSize + new Vector2(0, ToolBarHeight);
-            Repaint();
-            if (mask)
-            {
-                GUI.backgroundColor = maskColor;
-                GUI.Box(localPosition, "");
-            }
         }
 
         private void DeletePairsByKey(string key)
@@ -312,7 +299,7 @@ namespace IFramework.Language
         {
             for (int i = 0; i < _pairs.Count; i++)
             {
-                if (_pairs[i].key==key)
+                if (_pairs[i].key == key)
                 {
                     return true;
                 }
@@ -322,9 +309,9 @@ namespace IFramework.Language
         private void ReadCsv(string path)
         {
             DataReader dw = new DataReader(new StreamReader(path, System.Text.Encoding.UTF8), new DataRow(), new DataExplainer());
-           var pairs= dw.Get<LanPair>().Distinct()
-                .ToList().FindAll((p) => { return !string.IsNullOrEmpty(p.key) && !string.IsNullOrEmpty(p.value); });
-              dw.Dispose();
+            var pairs = dw.Get<LanPair>().Distinct()
+                 .ToList().FindAll((p) => { return !string.IsNullOrEmpty(p.key) && !string.IsNullOrEmpty(p.value); });
+            dw.Dispose();
             AddLanPairs(pairs);
         }
         private void ReadScriptableObject(string path)
@@ -472,7 +459,7 @@ namespace IFramework.Language
                     .Pan(() => {
                         if (!creatingKeyFoldon) return;
                         this.EBeginHorizontal(out rect, Styles.BG)
-                                   .TextField(ref tmpKey)
+                                   .ETextField(ref tmpKey)
                                    .Button(() =>
                                    {
                                        window.AddLanGroupKey(tmpKey);
@@ -483,12 +470,14 @@ namespace IFramework.Language
             }
 
             [SerializeField] private bool createLanPairFlodon;
-            [SerializeField] private LanPair tmpLanPair;
+            [SerializeField] private LanPair tmpLanPair = new LanPair();
             [SerializeField] private int hashID;
             private void AddLanPairFunc()
             {
+
                 if (window._keys.Count == 0) return;
                 Rect rect;
+
                 this.EBeginHorizontal(out rect, Styles.Fold)
                     .Foldout(ref createLanPairFlodon, "Create LanPair", true)
                     .EEndHorizontal()
@@ -508,7 +497,8 @@ namespace IFramework.Language
                                     .Label(tmpLanPair.key)
                                     .Label(EditorGUIUtility.IconContent("editicon.sml"), GUILayout.Width(smallBtnSize))
                                 .EndHorizontal()
-                                .Pan(() => {
+                                .Pan(() =>
+                                {
                                     Rect pos = GUILayoutUtility.GetLastRect();
                                     int ctrlId = GUIUtility.GetControlID(hashID, FocusType.Keyboard, pos);
                                     {
@@ -530,9 +520,9 @@ namespace IFramework.Language
                                         }
                                     }
                                 })
-                                .BeginHorizontal()
+                               .BeginHorizontal()
                                     .Label("Val", GUILayout.Width(describeWidth))
-                                    .TextField(ref tmpLanPair.value)
+                                    .ETextField(ref tmpLanPair.value)
                                     .EndHorizontal()
                                 .BeginHorizontal()
                                     .FlexibleSpace()
@@ -580,19 +570,19 @@ namespace IFramework.Language
                 this.DrawHorizontal(() => {
                     this.Foldout(ref keyFoldon, string.Format("Keys  Count: {0}", window._keys.Count), true);
                     this.Label("");
-                  searchField.OnGUI(GUILayoutUtility.GetLastRect());
+                    searchField.OnGUI(GUILayoutUtility.GetLastRect());
                 }, Styles.Fold);
                 if (keyFoldon)
                 {
                     this.DrawScrollView(() => {
-                        window._keys.ForEach((index,key) => {
+                        window._keys.ForEach((index, key) => {
                             if (key.ToLower().Contains(keySearchStr.ToLower()))
                             {
                                 this.BeginHorizontal(Styles.BG)
-                                    .SelectableLabel(key,GUILayout.Height(20))
+                                    .SelectableLabel(key, GUILayout.Height(20))
                                     .Label(window.IsKeyInUse(key) ? GUIContent.none : Contents.Warnning, GUILayout.Width(smallBtnSize))
                                     .Button(() => {
-                                        if (EditorUtility.DisplayDialog("Make sure","You Will Delete All Pairs with this key","ok","no"))
+                                        if (EditorUtility.DisplayDialog("Make sure", "You Will Delete All Pairs with this key", "ok", "no"))
                                             window.DeleteLanKey(key);
                                     }, string.Empty, Styles.CloseBtn, GUILayout.Width(smallBtnSize), GUILayout.Height(smallBtnSize))
                                     .EndHorizontal();
@@ -619,275 +609,6 @@ namespace IFramework.Language
                     });
             }
 
-            private class SearchablePopup : PopupWindowContent
-            {
-                public class InnerSearchField : FocusAbleGUIDrawer
-                {
-                    private class Styles
-                    {
-                        public static GUIStyle SearchTextFieldStyle = GUIStyles.Get("ToolbarSeachTextField");
-                        public static GUIStyle SearchCancelButtonStyle = GUIStyles.Get("SearchCancelButton");
-                        public static GUIStyle SearchCancelButtonEmptyStyle = GUIStyles.Get("SearchCancelButtonEmpty");
-                    }
-
-                    public string OnGUI(Rect position, string value)
-                    {
-                        GUIStyle cancelBtnStyle = string.IsNullOrEmpty(value) ? Styles.SearchCancelButtonEmptyStyle : Styles.SearchCancelButtonStyle;
-                        position.width -= cancelBtnStyle.fixedWidth;
-
-                        Styles.SearchTextFieldStyle.fixedHeight = position.height;
-                        cancelBtnStyle.fixedHeight = position.height;
-
-                        Styles.SearchTextFieldStyle.alignment = TextAnchor.MiddleLeft;
-                        while (Styles.SearchTextFieldStyle.lineHeight < position.height - 15)
-                        {
-                            Styles.SearchTextFieldStyle.fontSize++;
-                        }
-                        GUI.SetNextControlName(focusID);
-
-                        value = GUI.TextField(new Rect(position.x,
-                                                                         position.y + 1,
-                                                                         position.width,
-                                                                         position.height - 1),
-                                                                         value,
-                                                                         Styles.SearchTextFieldStyle);
-                        if (GUI.Button(new Rect(position.x + position.width,
-                                                position.y + 1,
-                                                cancelBtnStyle.fixedWidth,
-                                                cancelBtnStyle.fixedHeight
-                                                ),
-                                                GUIContent.none,
-                                                cancelBtnStyle))
-                        {
-                            value = string.Empty;
-                            GUI.changed = true;
-                            GUIUtility.keyboardControl = 0;
-                        }
-
-
-                        Event e = Event.current;
-                        if (position.Contains(e.mousePosition))
-                        {
-                            if (!focused)
-                                if ((e.type == EventType.MouseDown /*&& e.clickCount == 2*/) /*|| e.keyCode == KeyCode.F2*/)
-                                {
-                                    focused = true;
-                                    GUIFocusControl.Focus(this);
-                                    if (e.type != EventType.Repaint && e.type != EventType.Layout)
-                                        Event.current.Use();
-                                }
-                        }
-                        //if ((/*e.keyCode == KeyCode.Return ||*/ e.keyCode == KeyCode.Escape || e.character == '\n'))
-                        //{
-                        //    GUIFocusControl.Focus(null, Focused);
-                        //    Focused = false;
-                        //    if (e.type != EventType.Repaint && e.type != EventType.Layout)
-                        //        Event.current.Use();
-                        //}
-                        return value;
-                    }
-
-                }
-                private const float rowHeight = 16.0f;
-                private const float rowIndent = 8.0f;
-                public static void Show(Rect activatorRect, string[] options, int current, Action<int, string> onSelectionMade)
-                {
-                    SearchablePopup win = new SearchablePopup(options, current, onSelectionMade);
-                    PopupWindow.Show(activatorRect, win);
-                }
-                private static void Repaint() { EditorWindow.focusedWindow.Repaint(); }
-                private static void DrawBox(Rect rect, Color tint)
-                {
-                    Color c = GUI.color;
-                    GUI.color = tint;
-                    GUI.Box(rect, "", Selection);
-                    GUI.color = c;
-                }
-                private class FilteredList
-                {
-                    public struct Entry
-                    {
-                        public int Index;
-                        public string Text;
-                    }
-                    private readonly string[] allItems;
-                    public FilteredList(string[] items)
-                    {
-                        allItems = items;
-                        Entries = new List<Entry>();
-                        UpdateFilter("");
-                    }
-                    public string Filter { get; private set; }
-                    public List<Entry> Entries { get; private set; }
-                    public int Count { get { return allItems.Length; } }
-                    public bool UpdateFilter(string filter)
-                    {
-                        if (Filter == filter)
-                            return false;
-                        Filter = filter;
-                        Entries.Clear();
-                        for (int i = 0; i < allItems.Length; i++)
-                        {
-                            if (string.IsNullOrEmpty(Filter) || allItems[i].ToLower().Contains(Filter.ToLower()))
-                            {
-                                Entry entry = new Entry
-                                {
-                                    Index = i,
-                                    Text = allItems[i]
-                                };
-                                if (string.Equals(allItems[i], Filter, StringComparison.CurrentCultureIgnoreCase))
-                                    Entries.Insert(0, entry);
-                                else
-                                    Entries.Add(entry);
-                            }
-                        }
-                        return true;
-                    }
-                }
-
-                private readonly Action<int, string> onSelectionMade;
-                private readonly int currentIndex;
-                private readonly FilteredList list;
-                private Vector2 scroll;
-                private int hoverIndex;
-                private int scrollToIndex;
-                private float scrollOffset;
-                private static GUIStyle Selection = "SelectionRect";
-
-                private SearchablePopup(string[] names, int currentIndex, Action<int, string> onSelectionMade)
-                {
-                    list = new FilteredList(names);
-                    this.currentIndex = currentIndex;
-                    this.onSelectionMade = onSelectionMade;
-                    hoverIndex = currentIndex;
-                    scrollToIndex = currentIndex;
-                    scrollOffset = GetWindowSize().y - rowHeight * 2;
-                }
-
-                public override void OnOpen()
-                {
-                    base.OnOpen();
-                    EditorEnv.update += Repaint;
-                }
-                public override void OnClose()
-                {
-                    base.OnClose();
-                    EditorEnv.update -= Repaint;
-                }
-
-                public override Vector2 GetWindowSize()
-                {
-                    return new Vector2(base.GetWindowSize().x,
-                        Mathf.Min(600, list.Count * rowHeight + EditorStyles.toolbar.fixedHeight));
-                }
-
-                public override void OnGUI(Rect rect)
-                {
-                    Rect searchRect = new Rect(0, 0, rect.width, EditorStyles.toolbar.fixedHeight);
-                    Rect scrollRect = Rect.MinMaxRect(0, searchRect.yMax, rect.xMax, rect.yMax);
-
-                    HandleKeyboard();
-                    DrawSearch(searchRect);
-                    DrawSelectionArea(scrollRect);
-                }
-                private InnerSearchField searchField = new InnerSearchField();
-                private void DrawSearch(Rect rect)
-                {
-                    GUI.Label(rect, "", EditorStyles.toolbar);
-                    if (list.UpdateFilter(searchField.OnGUI(rect.Zoom(AnchorType.MiddleCenter, -2), list.Filter)))
-                    {
-                        hoverIndex = 0;
-                        scroll = Vector2.zero;
-                    }
-                }
-
-                private void DrawSelectionArea(Rect scrollRect)
-                {
-                    Rect contentRect = new Rect(0, 0,
-                        scrollRect.width - GUI.skin.verticalScrollbar.fixedWidth,
-                        list.Entries.Count * rowHeight);
-
-                    scroll = GUI.BeginScrollView(scrollRect, scroll, contentRect);
-
-                    Rect rowRect = new Rect(0, 0, scrollRect.width, rowHeight);
-
-                    for (int i = 0; i < list.Entries.Count; i++)
-                    {
-                        if (scrollToIndex == i &&
-                            (Event.current.type == EventType.Repaint
-                             || Event.current.type == EventType.Layout))
-                        {
-                            Rect r = new Rect(rowRect);
-                            r.y += scrollOffset;
-                            GUI.ScrollTo(r);
-                            scrollToIndex = -1;
-                            scroll.x = 0;
-                        }
-
-                        if (rowRect.Contains(Event.current.mousePosition))
-                        {
-                            if (Event.current.type == EventType.MouseMove ||
-                                Event.current.type == EventType.ScrollWheel)
-                                hoverIndex = i;
-                            if (Event.current.type == EventType.MouseDown)
-                            {
-                                onSelectionMade(list.Entries[i].Index, list.Entries[i].Text);
-                                EditorWindow.focusedWindow.Close();
-                            }
-                        }
-
-                        DrawRow(rowRect, i);
-
-                        rowRect.y = rowRect.yMax;
-                    }
-
-                    GUI.EndScrollView();
-                }
-
-                private void DrawRow(Rect rowRect, int i)
-                {
-                    if (list.Entries[i].Index == currentIndex)
-                        DrawBox(rowRect, Color.cyan);
-                    else if (i == hoverIndex)
-                        DrawBox(rowRect, Color.white);
-                    Rect labelRect = new Rect(rowRect);
-                    labelRect.xMin += rowIndent;
-                    GUI.Label(labelRect, list.Entries[i].Text);
-                }
-                private void HandleKeyboard()
-                {
-                    Event e = Event.current;
-                    if (e.type == EventType.KeyDown)
-                    {
-                        if (e.keyCode == KeyCode.DownArrow)
-                        {
-                            hoverIndex = Mathf.Min(list.Entries.Count - 1, hoverIndex + 1);
-                            Event.current.Use();
-                            scrollToIndex = hoverIndex;
-                            scrollOffset = rowHeight;
-                        }
-                        if (e.keyCode == KeyCode.UpArrow)
-                        {
-                            hoverIndex = Mathf.Max(0, hoverIndex - 1);
-                            Event.current.Use();
-                            scrollToIndex = hoverIndex;
-                            scrollOffset = -rowHeight;
-                        }
-                        if (e.keyCode == KeyCode.Return || e.character == '\n')
-                        {
-                            if (hoverIndex >= 0 && hoverIndex < list.Entries.Count)
-                            {
-                                onSelectionMade(list.Entries[hoverIndex].Index, list.Entries[hoverIndex].Text);
-                                EditorWindow.focusedWindow.Close();
-                            }
-                        }
-                        if (e.keyCode == KeyCode.Escape)
-                        {
-                            EditorWindow.focusedWindow.Close();
-                        }
-                    }
-                }
-            }
         }
 
 
@@ -895,7 +616,7 @@ namespace IFramework.Language
         [Serializable]
         private class GroupView : LanwindowItem
         {
-            protected override GUIContent titleContent { get { return  Contents.GroupTitle; } }
+            protected override GUIContent titleContent { get { return Contents.GroupTitle; } }
             private TableViewCalculator _table = new TableViewCalculator();
             private SearchFieldDrawer search;
             private Vector2 _scroll;
@@ -949,7 +670,7 @@ namespace IFramework.Language
             }
             protected override void DrawContent(Rect rect)
             {
-                var rs = rect.Zoom( AnchorType.MiddleCenter,-10).Split(SplitType.Horizontal, 30, 4);
+                var rs = rect.Zoom(AnchorType.MiddleCenter, -10).Split(SplitType.Horizontal, 30, 4);
                 search.OnGUI(rs[0]);
                 var ws = window._pairs.FindAll((w) => {
                     if (string.IsNullOrEmpty(_search))
@@ -964,7 +685,7 @@ namespace IFramework.Language
                             return w.value.ToLower().Contains(_search.ToLower());
                     }
                     return true;
-                    }).ToArray();
+                }).ToArray();
                 _table.Calc(rs[1], new Vector2(rs[1].x, rs[1].y + lineHeight), _scroll, lineHeight, ws.Length, setting);
                 this.LabelField(_table.titleRow.position, "", Styles.Title)
                     .LabelField(_table.titleRow[key].position, key)
@@ -973,7 +694,7 @@ namespace IFramework.Language
                 Event e = Event.current;
                 this.DrawScrollView(() => {
 
-                    for (int i = _table.firstVisibleRow; i < _table.lastVisibleRow+1; i++)
+                    for (int i = _table.firstVisibleRow; i < _table.lastVisibleRow + 1; i++)
                     {
                         if (e.modifiers == EventModifiers.Control &&
                                e.button == 0 && e.clickCount == 1 &&
@@ -1010,12 +731,15 @@ namespace IFramework.Language
                         {
                             GenericMenu menu = new GenericMenu();
                             menu.AddItem(new GUIContent("Delete"), false, () => {
-                                for (int j = _table.rows.Count - 1; j >= 0; j--)
+                                if (EditorUtility.DisplayDialog("Make Sure", string.Format("Really want delete {0} pairs", _table.rows.Count), "yes", "no"))
                                 {
-                                    if (_table.rows[j].selected)
-                                        window.DeleteLanPair(ws[j]);
+                                    for (int j = _table.rows.Count - 1; j >= 0; j--)
+                                    {
+                                        if (_table.rows[j].selected)
+                                            window.DeleteLanPair(ws[j]);
+                                    }
+                                    window.UpdateLanGroup();
                                 }
-                                window.UpdateLanGroup();
                             });
 
                             menu.ShowAsContext();
@@ -1033,9 +757,16 @@ namespace IFramework.Language
                             EditorGUI.EnumPopup(_table.rows[i][lan].position, ws[i].lan);
                         })
                         .Button(() => {
-                            window.DeleteLanPair(ws[i]);
-                            window.UpdateLanGroup();
-                        }, _table.rows[i][minnus].position,"",Styles.minus)
+                            if (EditorUtility.DisplayDialog("Make Sure", string.Format("Really want delete\n" +
+                                "Key :{0}\n" +
+                                "Language :{1}\n" +
+                                "Value : {2}", ws[i].key, ws[i].lan, ws[i].value), "yes", "no"))
+                            {
+                                window.DeleteLanPair(ws[i]);
+                                window.UpdateLanGroup();
+                            }
+
+                        }, _table.rows[i][minnus].position, "", Styles.minus)
                              .SelectableLabel(_table.rows[i][key].position, ws[i].key)
                              .SelectableLabel(_table.rows[i][value].position, ws[i].value);
                     }

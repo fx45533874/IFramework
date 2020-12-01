@@ -23,8 +23,8 @@ namespace IFramework.Language
     public class LanPair
     {
         public SystemLanguage lan;
-        public string key;
-        public string value;
+        public string key="";
+        public string value="";
     }
     public class LanguageModule : FrameworkModule
     {

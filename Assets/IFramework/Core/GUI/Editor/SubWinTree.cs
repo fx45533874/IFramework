@@ -410,16 +410,19 @@ namespace IFramework.GUITool
                     case EventType.MouseDrag:
                         if (dragging && DragName == uuid)
                         {
+                            float delta = 0;
                             switch (splitType)
                             {
                                 case SplitType.Vertical:
-                                    splitWidth += Event.current.delta.x;
+                                    delta = Event.current.delta.x;
                                     break;
                                 case SplitType.Horizontal:
-                                    splitWidth += Event.current.delta.y;
+                                    delta += Event.current.delta.y;
                                     break;
                             }
-                            tree.Repaint();
+                            splitWidth += delta;
+                            if (Mathf.Abs(delta) >1f)
+                                tree.Repaint();
                         }
                         break;
                     case EventType.MouseUp:
@@ -505,9 +508,8 @@ namespace IFramework.GUITool
             internal TreeLeaf(GUIContent title) : base() { m_minSize = new Vector2(Styles.minize, Styles.minize); this.titleContent = title; }
             public override void CalcPosition(Rect position)
             {
-                //base.CalcPosition(position);
-                this.m_position = position.Lerp(m_position, position, 0.04f);
-                //tree.Repaint();
+                base.CalcPosition(position);
+                //this.m_position = position.Lerp(m_position, position, 0.04f);
             }
             internal bool IsOverTitle(Vector2 vector2) { return titleRect.Contains(vector2); }
 
@@ -690,7 +692,7 @@ namespace IFramework.GUITool
                 trunk.DockLeaf(leaf, dockType);
                 closedLeafs.Remove(leaf);
                 if (onDockLeaf != null) onDockLeaf(leaf);
-                Repaint();
+                //Repaint();
             }
         }
         public void CloseLeaf(TreeLeaf leaf)
@@ -736,6 +738,10 @@ namespace IFramework.GUITool
                                                             ));
             root.LegalSplit();
             root.CalcPosition(rect);
+            //if (position.size <= rect.size && Event.current.type == EventType.Layout)
+            //{
+            //    Repaint();
+            //}
         }
         private bool m_IsResizeWindow;
         public bool IsResizeWindow
@@ -781,77 +787,83 @@ namespace IFramework.GUITool
             if (e.button != 0) return;
             if (!position.Contains(e.mousePosition)) return;
 
-            if (e.type == EventType.Repaint && dragleaf != null)
+            switch (e.type)
             {
-                Styles.FlowWindow.Draw(new Rect(e.mousePosition, Vector2.one * 150), dragleaf.titleContent, false, false, false, false);
-                Styles.SelectRect.Draw(selectionRect, false, false, false, false);
-            }
-            if (e.type == EventType.MouseDrag)
-            {
-                if (dragleaf == null)
-                    dragleaf = OpenLeafs.Find((leaf) => { return leaf.IsOverTitle(e.mousePosition); });
-                if (dragleaf == null) return;
-                var overLeaf = OpenLeafs.Find((leaf) => { return leaf.IsOver(e.mousePosition); });
-                if (overLeaf == null)
-                {
-                    selectionRect = Rect.zero;
-                    return;
-                }
-                Vector2 v = e.mousePosition;
-                Rect r = overLeaf.position;
-                float spH = r.height / 3;
-                float spW = r.width / 3;
-                if (v.y < r.yMin + spH &&
-                        v.x > r.xMin + spW &&
-                        v.x < r.xMax - spW)
-                {
-                    selectionRect = new Rect(r.position, new Vector2(r.width, spH));
-                    docktype = DockType.Up;
-                }
-                else if (v.y > r.yMax - spH &&
-                            v.x > r.xMin + spW &&
-                            v.x < r.xMax - spW)
-                {
-                    selectionRect = new Rect(new Vector2(r.x, r.yMax - spH),
-                                        new Vector2(r.width, spH));
-                    docktype = DockType.Down;
-                }
-                else if (v.x > r.xMax - spW &&
-                            v.y < r.yMax - spH &&
-                            v.y > r.yMin + spH)
-                {
-                    selectionRect = new Rect(new Vector2(r.xMax - spW, r.y),
-                                         new Vector2(spW, r.height));
-                    docktype = DockType.Right;
-                }
-                else if (v.x < r.xMin + spW &&
-                            v.y < r.yMax - spH &&
-                            v.y > r.yMin + spH)
-                {
-                    selectionRect = new Rect(r.position, new Vector2(spW, r.height));
-                    docktype = DockType.Left;
-                }
-                else
-                {
-                    selectionRect = Rect.zero;
-                }
-                Repaint();
-            }
-            else if (e.type == EventType.MouseUp)
-            {
-                if (dragleaf != null)
-                {
-                    var overLeaf = OpenLeafs.Find((leaf) => { return leaf.IsOver(e.mousePosition); });
-                    if (overLeaf != null && selectionRect != Rect.zero && overLeaf != dragleaf)
+                case EventType.MouseDown:
+                    if (dragleaf == null)
+                        dragleaf = OpenLeafs.Find((leaf) => { return leaf.IsOverTitle(e.mousePosition); });
+                    break;
+                case EventType.MouseUp:
                     {
-                        root.RemoveLeaf(dragleaf);
-                        TreeTrunk node = overLeaf.parent as TreeTrunk;
-                        node.DockLeaf(overLeaf, dragleaf, docktype);
+                        if (dragleaf == null) return;
+                        var overLeaf = OpenLeafs.Find((leaf) => { return leaf.IsOver(e.mousePosition); });
+                        if (overLeaf != null && selectionRect != Rect.zero && overLeaf != dragleaf)
+                        {
+                            root.RemoveLeaf(dragleaf);
+                            TreeTrunk node = overLeaf.parent as TreeTrunk;
+                            node.DockLeaf(overLeaf, dragleaf, docktype);
+                        }
+                        dragleaf = null;
+                        selectionRect = Rect.zero;
                     }
-                    dragleaf = null;
-                    selectionRect = Rect.zero;
-                    Repaint();
-                }
+                    break;
+                case EventType.Repaint:
+                    if (dragleaf != null)
+                    {
+                        Styles.FlowWindow.Draw(new Rect(e.mousePosition, Vector2.one * 150), dragleaf.titleContent, false, false, false, false);
+                        Styles.SelectRect.Draw(selectionRect, false, false, false, false);
+                    }
+                    break;
+                case EventType.MouseDrag:
+                    {
+                        if (dragleaf == null) return;
+                        var overLeaf = OpenLeafs.Find((leaf) => { return leaf.IsOver(e.mousePosition); });
+                        if (overLeaf == null)
+                        {
+                            selectionRect = Rect.zero;
+                            return;
+                        }
+                        Vector2 v = e.mousePosition;
+                        Rect r = overLeaf.position;
+                        float spH = r.height / 3;
+                        float spW = r.width / 3;
+                        if (v.y < r.yMin + spH &&
+                                v.x > r.xMin + spW &&
+                                v.x < r.xMax - spW)
+                        {
+                            selectionRect = new Rect(r.position, new Vector2(r.width, spH));
+                            docktype = DockType.Up;
+                        }
+                        else if (v.y > r.yMax - spH &&
+                                    v.x > r.xMin + spW &&
+                                    v.x < r.xMax - spW)
+                        {
+                            selectionRect = new Rect(new Vector2(r.x, r.yMax - spH),
+                                                new Vector2(r.width, spH));
+                            docktype = DockType.Down;
+                        }
+                        else if (v.x > r.xMax - spW &&
+                                    v.y < r.yMax - spH &&
+                                    v.y > r.yMin + spH)
+                        {
+                            selectionRect = new Rect(new Vector2(r.xMax - spW, r.y),
+                                                 new Vector2(spW, r.height));
+                            docktype = DockType.Right;
+                        }
+                        else if (v.x < r.xMin + spW &&
+                                    v.y < r.yMax - spH &&
+                                    v.y > r.yMin + spH)
+                        {
+                            selectionRect = new Rect(r.position, new Vector2(spW, r.height));
+                            docktype = DockType.Left;
+                        }
+                        else
+                        {
+                            selectionRect = Rect.zero;
+                        }
+                        Repaint();
+                    }
+                    break;
             }
         }
 
@@ -933,14 +945,6 @@ namespace IFramework.GUITool
                 Log.W("SubWin    " + name + "  value is mull,will not Serializate");
             }
             return root;
-            //try
-            //{
-               
-            //}
-            //catch (Exception)
-            //{
-            //    throw new Exception(name);
-            //}
 
         }
         private static void DeSerializeField<T>(XmlElement root, string name, ref T obj)
