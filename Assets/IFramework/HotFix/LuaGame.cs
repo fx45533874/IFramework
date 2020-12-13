@@ -21,15 +21,14 @@ namespace IFramework.Hotfix
     {
         public class UnityModules
         {
-            public UIModule UI;
-            public LanguageModule Lan;
+            public IUIModule UI { get { return Launcher.modules.FindModule<UIModule>(""); } }
+            public ILanguageModule Lan { get { return Launcher.modules.FindModule<LanguageModule>(""); } }
         }
 
         public UnityModules unityModules = new UnityModules();
         public override void CreateModules()
         {
-            unityModules.UI = modules.CreateModule<UIModule>();
-            unityModules.Lan = modules.CreateModule<LanguageModule>();
+           
         }
 
         public override void Startup()
