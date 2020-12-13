@@ -204,8 +204,10 @@ namespace IFramework.UI
         }
         protected override void OnUpdate()
         {
-
-            _groups.Update();
+            if (_groups!=null)
+            {
+                 _groups.Update();
+            }
         }
 
         public void AddLoader(IPanelLoader loader)
