@@ -9,14 +9,9 @@
 
 namespace IFramework.Tweens
 {
-    class BoolTweenValue : TweenValue<bool>
+    public enum TweenDirection
     {
-        protected override void MoveNext()
-        {
-            if (percent == 1)
-            {
-                current = end;
-            }
-        }
+        Forward,
+        Back
     }
 }

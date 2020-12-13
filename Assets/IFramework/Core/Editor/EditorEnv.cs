@@ -151,11 +151,11 @@ namespace IFramework
         [InitializeOnLoadMethod]
         static void EditorEnvInit()
         {
-            UnityEngine.Debug.Log("FrameworkPath   right?   " + frameworkPath);
+            UnityEngine.Debug.Log("IFramework: Root Path right?   " + frameworkPath);
             Framework.CreateEnv("IFramework_Editor", envType).InitWithAttribute();
             assemblyCompilationStarted += (str) => {
                 Framework.env0.Dispose();
-                UnityEngine.Debug.Log("EditorEnv Dispose"); 
+                UnityEngine.Debug.Log("IFramework: EditorEnv Dispose"); 
             };
 
             update += Framework.env0.Update;

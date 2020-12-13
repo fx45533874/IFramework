@@ -77,10 +77,6 @@ namespace IFramework.GUITool
             PopupWindow.Show(position, win);
         }
 
-        private static void Repaint()
-        {
-            EditorWindow.focusedWindow.Repaint();
-        }
         private static void DrawBox(Rect rect, Color tint)
         {
             Color c = GUI.color;
@@ -109,17 +105,6 @@ namespace IFramework.GUITool
             scrollToIndex = currentIndex;
             scrollOffset = GetWindowSize().y - ROW_HEIGHT * 2;
             searchField = new SearchField(list.fitter, null, 0);
-        }
-
-        public override void OnOpen()
-        {
-            base.OnOpen();
-            EditorEnv.update += Repaint;
-        }
-        public override void OnClose()
-        {
-            base.OnClose();
-            EditorEnv.update -= Repaint;
         }
         public override Vector2 GetWindowSize()
         {
@@ -155,11 +140,11 @@ namespace IFramework.GUITool
 
             Rect rowRect = new Rect(0, 0, scrollRect.width, ROW_HEIGHT);
 
+            Event e = Event.current;
             for (int i = 0; i < list.entries.Count; i++)
             {
                 if (scrollToIndex == i &&
-                    (Event.current.type == EventType.Repaint
-                     || Event.current.type == EventType.Layout))
+                    (e.type == EventType.Repaint || e.type == EventType.Layout))
                 {
                     Rect r = new Rect(rowRect);
                     r.y += scrollOffset;
@@ -168,12 +153,14 @@ namespace IFramework.GUITool
                     scroll.x = 0;
                 }
 
-                if (rowRect.Contains(Event.current.mousePosition))
+                if (rowRect.Contains(e.mousePosition))
                 {
-                    if (Event.current.type == EventType.MouseMove ||
-                        Event.current.type == EventType.ScrollWheel)
+                    if (e.type == EventType.MouseMove)
+                    {
                         hoverIndex = i;
-                    if (Event.current.type == EventType.MouseDown)
+                        e.Use();
+                    }
+                    if (e.type == EventType.MouseDown)
                     {
                         onSelectionMade(list.entries[i].index, list.entries[i].value);
                         EditorWindow.focusedWindow.Close();
@@ -228,6 +215,7 @@ namespace IFramework.GUITool
                 {
                     EditorWindow.focusedWindow.Close();
                 }
+                e.Use();
             }
         }
     }

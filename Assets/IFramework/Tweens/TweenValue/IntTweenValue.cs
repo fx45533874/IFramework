@@ -10,13 +10,12 @@
 namespace IFramework.Tweens
 {
     [ScriptVersion(5)]
-    public class IntTweenValue : TweenValue<int>
+    class IntTweenValue : TweenValue<int>
     {
         protected override void MoveNext()
         {
-            var point = curve.GetPercent(percent);
-            int _cur = start.Lerp(end, point.y);
-            cur = targetValue.Lerp(_cur,percentDelta);
+            int dest = start.Lerp(end, convertPercent);
+            current = pluginValue.Lerp(dest, deltaPercent);
         }
     }
 }

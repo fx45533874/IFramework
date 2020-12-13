@@ -183,10 +183,21 @@ namespace IFramework.GUITool
         public void ControlSelectRow(int index)
         {
             if (index < 0 || index >= rows.Count) return;
-            rows[index].selected = true;
-            if (!selectedRows.Contains(rows[index]))
+            rows[index].selected = !rows[index].selected;
+
+            if (rows[index].selected)
             {
-                selectedRows.Add(rows[index]);
+                if (!selectedRows.Contains(rows[index]))
+                {
+                    selectedRows.Add(rows[index]);
+                }
+            }
+            else
+            {
+                if (selectedRows.Contains(rows[index]))
+                {
+                    selectedRows.Remove(rows[index]);
+                }
             }
             Sort();
 

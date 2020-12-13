@@ -6,17 +6,12 @@
  *Description:    IFramework
  *History:        2018.11--
 *********************************************************************************/
+using System;
 
 namespace IFramework.Tweens
 {
-    class BoolTweenValue : TweenValue<bool>
+    public interface ISingleTween<T>:ITween<T> where T : struct
     {
-        protected override void MoveNext()
-        {
-            if (percent == 1)
-            {
-                current = end;
-            }
-        }
+        void Config(T start, T end, float duration, Func<T> getter, Action<T> setter,bool snap);
     }
 }

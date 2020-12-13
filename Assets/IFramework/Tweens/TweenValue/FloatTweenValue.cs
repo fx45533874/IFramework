@@ -9,13 +9,17 @@
 
 namespace IFramework.Tweens
 {
-    public class FloatTweenValue : TweenValue<float>
+    class FloatTweenValue : TweenValue<float>
     {
         protected override void MoveNext()
         {
-            var point = curve.GetPercent(percent);
-            float _cur = start.Lerp(end, point.y);
-            cur = targetValue.Lerp(_cur,percentDelta);
+            float dest = start.Lerp(end, convertPercent);
+            current = pluginValue.Lerp(dest, deltaPercent);
+        }
+
+        protected override float Snap(float value)
+        {
+            return value.RoundToInt();
         }
     }
 

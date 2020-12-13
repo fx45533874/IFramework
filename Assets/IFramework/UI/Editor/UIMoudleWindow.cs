@@ -413,7 +413,6 @@ namespace IFramework.UI
                             SearchablePopup.Show(pos, panelTypes.ToArray(), index, (i, str) =>
                             {
                                 panelType = str;
-                                EditorWindow.focusedWindow.Repaint();
                             });
                         }
                     }
@@ -445,7 +444,6 @@ namespace IFramework.UI
                                 SearchablePopup.Show(pos, modelTypes.ToArray(), index, (i, str) =>
                                 {
                                     modelType = str;
-                                    EditorWindow.focusedWindow.Repaint();
                                 });
                             }
                         }

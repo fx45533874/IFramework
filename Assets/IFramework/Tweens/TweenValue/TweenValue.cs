@@ -14,69 +14,24 @@ using UnityEngine;
 namespace IFramework.Tweens
 {
     [ScriptVersion(22)]
-    public abstract class TweenValue : RecyclableObject
+    abstract class TweenValue : RecyclableObject
     {
-        private ValueCurve _curve = ValueCurve.linecurve;
-        private float _dur;
+        private IPercentConverter _converter = ValueCurveCoverter.Default;
         private ISequenceNode _node;
-        private float _curdur;
-        protected float delta { get { return Time.deltaTime; } }
+        private float _time;
 
         protected event Action onCompelete;
+        protected float percent { get { return (_time / duration).Clamp01(); } }
+        protected float convertPercent { get { return _converter.Convert(percent, _time, duration); } }
+        protected float deltaPercent { get { return delta + (1 - delta) * percent; } }
 
-        public ValueCurve curve { get { return _curve; } set { _curve = value; } }
+        public IPercentConverter converter { get { return _converter; } set { _converter = value; } }
+        public abstract float duration { get; }
         public bool compeleted { get; private set; }
-        public float dur { get { return _dur; } set { _dur = value; } }
-        protected float percent { get { return (_curdur / dur).Clamp01(); } }
-        protected float percentDelta { get { return delta + (1 - delta) * percent; } }
 
-        public void Run()
-        {
-            _node = this.Sequence(this.env)
-                         .While(() => {
-                             return percent < 1;
-                         },
-                         () => {
-                             if (recyled) return;
-                             _curdur += Time.deltaTime;
-                             MoveNext();
-                         })
-                         .OnCompelete(() =>
-                         {
-                             _curdur = 0;
-                             OnComplete();
-                             if (onCompelete != null)
-                                 onCompelete();
-                             compeleted = true;
-                         })
-                         .Run();
-        }
-        protected abstract void MoveNext();
-        protected abstract void OnComplete();
-
-
-        protected override void OnDataReset()
-        {
-
-            if (_node != null && !_node.recyled)
-            {
-                _node.Recyle();
-                _node = null;
-            }
-            onCompelete = null;
-            _curdur = _dur = 0f;
-
-            _curve = ValueCurve.linecurve;
-            compeleted = false;
-        }
-
-        public static TweenValue<T> Get<T>(EnvironmentType envType) where T : struct
-        {
-            Type type;
-            if (map.TryGetValue(typeof(T), out type))
-                return Allocate(type, envType) as TweenValue<T>;
-            throw new Exception(string.Format("Do not Have TweenValue<{0}>  with Type {0}", typeof(T)));
-        }
+        public static float delta = 0.618f;
+        public static float deltaTime = 0.02f;
+        public static float speed = 1;
         private static Dictionary<Type, Type> map = new Dictionary<Type, Type>()
         {
             {typeof(bool),typeof(BoolTweenValue) },
@@ -89,70 +44,97 @@ namespace IFramework.Tweens
             {typeof(Rect),typeof(RectTweenValue) },
             {typeof(Quaternion),typeof(QuaternionTweenValue) },
         };
+        public static TweenValue<T> Get<T>(EnvironmentType envType) where T : struct
+        {
+            Type type;
+            if (map.TryGetValue(typeof(T), out type))
+                return Allocate(type, envType) as TweenValue<T>;
+            throw new Exception(string.Format("Do not Have TweenValue<{0}>  with Type {0}", typeof(T)));
+        }
+
+        protected abstract void MoveNext();
+        protected override void OnDataReset()
+        {
+            if (_node != null && !_node.recyled)
+            {
+                _node.Recyle();
+                _node = null;
+            }
+            onCompelete = null;
+            _time = 0f;
+            _converter = ValueCurveCoverter.Default;
+            compeleted = false;
+        }
+
+
+        public void Run()
+        {
+            _node = this.Sequence(this.env)
+                         .While(IsFinish, LoopEvent)
+                         .OnCompelete(OnCompelete)
+                         .Run();
+        }
+        private bool IsFinish()
+        {
+            return percent < 1;
+        }
+        private void LoopEvent()
+        {
+            if (recyled) return;
+            _time += deltaTime * speed;
+            MoveNext();
+        }
+        private void OnCompelete()
+        {
+            _time = 0;
+            if (onCompelete != null)
+                onCompelete();
+            compeleted = true;
+        }
     }
 
     [ScriptVersion(4)]
-    public abstract class TweenValue<T> : TweenValue where T : struct
+    abstract class TweenValue<T> : TweenValue where T : struct
     {
-        private T _cur;
-        private T _end;
-        private T _start;
+        private IPlugin<T> _plugin;
+        private T _current;
 
+        protected T pluginValue { get { return _plugin.getter.Invoke(); } }
 
-        public T cur
+        public T current
         {
-            get { return _cur; }
+            get { return _current; }
             set
             {
-                _cur = value;
-                if (setter != null)
+                if (_plugin.snap)
+                    _current = Snap(value);
+                else
+                    _current = value;
+                if (_plugin.setter != null)
                 {
-                    setter(value);
+                    _plugin.setter(_current);
                 }
             }
         }
-        public T end
-        {
-            get { return _end; }
-            set
-            {
-                _end = value;
-            }
-        }
-        public T start
-        {
-            get { return _start; }
-            set
-            {
-                _start = value;
-            }
-        }
+        public T end { get { return _plugin.end; } }
+        public T start { get { return _plugin.start; } }
+        public override float duration { get { return _plugin.duration; } }
 
-        private Action<T> setter;
-        private Func<T> getter;
-
-        protected T targetValue { get { return getter.Invoke(); } }
-        public virtual void Config(T start, T end, float dur, Func<T> getter, Action<T> setter, Action onCompelete)
-        {
-            this._start = this._cur = start;
-            this._end = end;
-            this.dur = dur;
-            this.onCompelete += onCompelete;
-            this.setter = setter;
-            this.getter = getter;
-            SetDataDirty();
-        }
-        protected override void OnComplete()
-        {
-            // cur = end;
-        }
-
+        protected virtual T Snap(T value) { return value; }
         protected override void OnDataReset()
         {
             base.OnDataReset();
-            _cur = _start = _end = default(T);
-            setter = null;
-            getter = null;
+            _plugin.Recyle();
+            _plugin = null;
+            _current = default(T);
+        }
+
+        public void Config(IPlugin<T> plugin, Action onCompelete)
+        {
+            this._plugin = plugin;
+            this._current = plugin.start;
+            this.onCompelete += onCompelete;
+            SetDataDirty();
         }
     }
 }

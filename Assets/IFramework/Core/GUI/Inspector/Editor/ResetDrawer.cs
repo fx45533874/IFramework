@@ -45,7 +45,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.intValue = 0;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Boolean:
@@ -54,7 +54,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.boolValue = false;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Float:
@@ -63,7 +63,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.floatValue = 0;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.String:
@@ -72,7 +72,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.stringValue = string.Empty;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Color:
@@ -81,7 +81,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.colorValue = Color.white;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.ObjectReference:
@@ -90,7 +90,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.objectReferenceValue = null;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Enum:
@@ -99,7 +99,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.enumValueIndex = 0;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Vector2:
@@ -108,7 +108,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.vector2Value = Vector2.zero;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Vector3:
@@ -117,7 +117,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.vector3Value = Vector3.zero;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Vector4:
@@ -126,7 +126,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.vector4Value = Vector4.zero;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Rect:
@@ -135,7 +135,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.rectValue = Rect.zero;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.ArraySize:
@@ -144,7 +144,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.arraySize =0;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Quaternion:
@@ -153,7 +153,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.quaternionValue = Quaternion.identity;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.ExposedReference:
@@ -162,7 +162,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.exposedReferenceValue = null;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Vector2Int:
@@ -171,7 +171,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.vector2IntValue = Vector2Int.zero;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.Vector3Int:
@@ -180,7 +180,7 @@ namespace IFramework.GUITool.Inspector
                             {
                                 property.vector3IntValue = Vector3Int.zero;
                                 property.serializedObject.ApplyModifiedProperties();
-                                EditorWindow.mouseOverWindow.Repaint();
+                                 GUI.FocusControl("");
                             }
                         break;
                     case SerializedPropertyType.LayerMask:

@@ -9,14 +9,13 @@
 
 namespace IFramework.Tweens
 {
-    class BoolTweenValue : TweenValue<bool>
+    public interface IPercentConverter
     {
-        protected override void MoveNext()
-        {
-            if (percent == 1)
-            {
-                current = end;
-            }
-        }
+        float Convert(float percent, float time, float duration);
+        void Recyle();
+    }
+    public interface IPercentConverter<T> : IPercentConverter
+    {
+        IPercentConverter Config(T value);
     }
 }

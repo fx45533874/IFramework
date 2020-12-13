@@ -498,25 +498,23 @@ namespace IFramework.Hotfix.AB
                         GUIStyle style = i % 2 == 0 ? EntryBackEven : EntryBackodd;
                         if (e.type == EventType.Repaint)
                             style.Draw(tableViewCalc.rows[i].position, false, false, tableViewCalc.rows[i].selected, false);
-                        if (e.modifiers == EventModifiers.Control &&
-                                e.button == 0 && e.clickCount == 1 &&
-                                tableViewCalc.rows[i].position.Contains(e.mousePosition))
+                        if (e.button == 0 && e.clickCount == 1 && e.type == EventType.MouseUp && tableViewCalc.rows[i].position.Contains(e.mousePosition))
                         {
-                            tableViewCalc.ControlSelectRow(i);
-                            _window.Repaint();
-                        }
-                        else if (e.modifiers == EventModifiers.Shift &&
-                                        e.button == 0 && e.clickCount == 1 &&
-                                        tableViewCalc.rows[i].position.Contains(e.mousePosition))
-                        {
-                            tableViewCalc.ShiftSelectRow(i);
-                            _window.Repaint();
-                        }
-                        else if (e.button == 0 && e.clickCount == 1 &&
-                                        tableViewCalc.rows[i].position.Contains(e.mousePosition))
-                        {
-                            tableViewCalc.SelectRow(i);
-                            _window.Repaint();
+                            switch (e.modifiers)
+                            {
+                                case EventModifiers.None:
+                                    tableViewCalc.SelectRow(i);
+                                    e.Use();
+                                    break;
+                                case EventModifiers.Shift:
+                                    tableViewCalc.ShiftSelectRow(i);
+                                    e.Use();
+                                    break;
+                                case EventModifiers.Control:
+                                    tableViewCalc.ControlSelectRow(i);
+                                    e.Use();
+                                    break;
+                            }
                         }
 
                         var item = DirCollect.collection[i];
@@ -558,13 +556,13 @@ namespace IFramework.Hotfix.AB
             }
             private void Eve(Event e)
             {
-                if (e.button == 0 && e.clickCount == 1 &&
+                if (e.button == 0 && e.clickCount == 1 && e.type== EventType.MouseUp &&
                         (!tableViewCalc.view.Contains(e.mousePosition) ||
                             (tableViewCalc.view.Contains(e.mousePosition) &&
                              !tableViewCalc.content.Contains(e.mousePosition))))
                 {
                     tableViewCalc.SelectNone();
-                    _window.Repaint();
+                    e.Use();
                 }
                 var info = EditorTools.DragAndDropTool.Drag(e, tableViewCalc.view);
                 if (info.enterArera && info.compelete)
@@ -733,40 +731,35 @@ namespace IFramework.Hotfix.AB
                 {
                     for (int i = ABBListViewCalc.firstVisibleRow; i < ABBListViewCalc.lastVisibleRow + 1; i++)
                     {
-                        if (e.modifiers == EventModifiers.Control &&
-                                e.button == 0 && e.clickCount == 1 &&
-                                ABBListViewCalc.rows[i].position.Contains(e.mousePosition))
+                        if (e.button == 0 && e.clickCount == 1 && e.type== EventType.MouseUp && ABBListViewCalc.rows[i].position.Contains(e.mousePosition))
                         {
-                            if (rect.Contains(e.mousePosition))
+                            switch (e.modifiers)
                             {
-                                ABBListViewCalc.ControlSelectRow(i);
-                                _window.Repaint();
-                            }
-                
-                        }
-                        else if (e.modifiers == EventModifiers.Shift &&
-                                        e.button == 0 && e.clickCount == 1 &&
-                                        ABBListViewCalc.rows[i].position.Contains(e.mousePosition))
-                        {
-                            if (rect.Contains(e.mousePosition))
-                            {
-                                ABBListViewCalc.ShiftSelectRow(i);
-                                _window.Repaint();
-                            }
-                    
-                        }
-                        else if (e.button == 0 && e.clickCount == 1 &&
-                                        ABBListViewCalc.rows[i].position.Contains(e.mousePosition)
-                                      /*  && ListView.viewPosition.Contains(Event.current.mousePosition) */)
-                        {
-                            if (rect.Contains(e.mousePosition))
-                            {
-                                ABBListViewCalc.SelectRow(i);
-                                ChossedABB = AssetbundleBuilds[i];
-                                _window.Repaint();
-                            }
-                        }
+                                case EventModifiers.None:
+                                    if (rect.Contains(e.mousePosition))
+                                    {
+                                        ABBListViewCalc.SelectRow(i);
+                                        ChossedABB = AssetbundleBuilds[i];
+                                        e.Use();
+                                    }
+                                    break;
+                                case EventModifiers.Shift:
+                                    if (rect.Contains(e.mousePosition))
+                                    {
+                                        ABBListViewCalc.ShiftSelectRow(i);
+                                        e.Use();
+                                    }
+                                    break;
+                                case EventModifiers.Control:
+                                    if (rect.Contains(e.mousePosition))
+                                    {
+                                        ABBListViewCalc.ControlSelectRow(i);
+                                        e.Use();
+                                    }
+                                    break;
 
+                            }
+                        }
                         GUIStyle style = i % 2 == 0 ? EntryBackEven : EntryBackodd;
                         if (e.type == EventType.Repaint)
                             style.Draw(ABBListViewCalc.rows[i].position, false, false, ABBListViewCalc.rows[i].selected, false);
@@ -780,13 +773,12 @@ namespace IFramework.Hotfix.AB
                 }, ABBListViewCalc.view,
                 ref ABBScrollPos,
                 ABBListViewCalc.content, false, false);
-
-                if (e.button == 0 && e.clickCount == 1 &&
+                if (e.button == 0 && e.clickCount == 1 && e.type== EventType.MouseUp &&
                             (ABBListViewCalc.view.Contains(e.mousePosition) &&
                              !ABBListViewCalc.content.Contains(e.mousePosition)))
                 {
                     ABBListViewCalc.SelectNone();
-                    _window.Repaint();
+                    e.Use();
                     ChoosedAsset = null;
                     ChossedABB = null;
                 }
@@ -874,37 +866,34 @@ namespace IFramework.Hotfix.AB
                                 else
                                     this.Label(ABBContentTable.rows[i][CrossRef].position, asset.bundles.Count.ToString(), GUIStyles.Get("CN CountBadge"));
                             });
-
-                        if (e.modifiers == EventModifiers.Control &&
-                                e.button == 0 && e.clickCount == 1 &&
-                                ABBContentTable.rows[i].position.Contains(Event.current.mousePosition))
+                        if (e.button == 0 && e.clickCount == 1 && e.type== EventType.MouseUp &&
+                                ABBContentTable.rows[i].position.Contains(e.mousePosition))
                         {
-                            if (rect.Contains(e.mousePosition))
+                            switch (e.modifiers)
                             {
-                                ABBContentTable.ControlSelectRow(i);
-                                _window.Repaint();
+                                case EventModifiers.None:
+                                    if (rect.Contains(e.mousePosition))
+                                    {
+                                        ABBContentTable.SelectRow(i);
+                                        ChoosedAsset = asset;
+                                        e.Use();
+                                    }
+                                    break;
+                                case EventModifiers.Shift:
+                                    if (rect.Contains(e.mousePosition))
+                                    {
+                                        ABBContentTable.ShiftSelectRow(i);
+                                        e.Use();
+                                    }
+                                    break;
+                                case EventModifiers.Control:
+                                    if (rect.Contains(e.mousePosition))
+                                    {
+                                        ABBContentTable.ControlSelectRow(i);
+                                        e.Use();
+                                    }
+                                    break;
                             }
-                        }
-                        else if (e.modifiers == EventModifiers.Shift &&
-                                        e.button == 0 &&e.clickCount == 1 &&
-                                        ABBContentTable.rows[i].position.Contains(e.mousePosition))
-                        {
-                            if (rect.Contains(e.mousePosition))
-                            {
-                                ABBContentTable.ShiftSelectRow(i);
-                                _window.Repaint();
-                            }
-                        }
-                        else if (e.button == 0 && e.clickCount == 1 &&
-                                        ABBContentTable.rows[i].position.Contains(e.mousePosition))
-                        {
-                            if (rect.Contains(e.mousePosition))
-                            {
-                                ABBContentTable.SelectRow(i);
-                                ChoosedAsset = asset;
-                                _window.Repaint();
-                            }
-
                         }
                     }
 
@@ -929,13 +918,13 @@ namespace IFramework.Hotfix.AB
 
                 Handles.color = Color.white;
 
-                if (e.button == 0 && e.clickCount == 1 &&
+                if (e.button == 0 && e.clickCount == 1 && e.type== EventType.MouseUp &&
                      (ABBContentTable.view.Contains(e.mousePosition) &&
                       !ABBContentTable.content.Contains(e.mousePosition)))
                 {
                     ABBContentTable.SelectNone();
                     ChoosedAsset = null;
-                    _window.Repaint();
+                    e.Use();
                 }
                 if (e.button == 1 && e.clickCount == 1 && ABBContentTable.content.Contains(e.mousePosition))
                 {

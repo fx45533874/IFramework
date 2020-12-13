@@ -122,7 +122,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1203488479}
   - component: {fileID: 1203488478}
-  - component: {fileID: 1203488480}
   - component: {fileID: 1203488477}
   m_Layer: 0
   m_Name: Main Camera
@@ -145,6 +144,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cube: {fileID: 1860893770}
   text: {fileID: 1468354776}
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 2
+      inWeight: 0
+      outWeight: 0.6871227
+    - serializedVersion: 3
+      time: 0.22217882
+      value: 0.87237954
+      inSlope: 1.2542009
+      outSlope: 1.2542009
+      tangentMode: 1
+      weightedMode: 3
+      inWeight: 0.63290733
+      outWeight: 0.19771446
+    - serializedVersion: 3
+      time: 0.43074656
+      value: 0.6184858
+      inSlope: -0.428016
+      outSlope: -2.5812752
+      tangentMode: 1
+      weightedMode: 3
+      inWeight: 0.4960674
+      outWeight: 0.19432536
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.113282934
+      outSlope: 1
+      tangentMode: 65
+      weightedMode: 1
+      inWeight: 0.49863693
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 0
+    m_RotationOrder: 4
 --- !u!20 &1203488478
 Camera:
   m_ObjectHideFlags: 0
@@ -201,19 +242,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1203488480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1203488476}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a97d2956acaf9d342b535760a5f5f0cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  game: {fileID: 0}
 --- !u!1 &1468354774
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,6 +520,7 @@ GameObject:
   - component: {fileID: 1948415826}
   - component: {fileID: 1948415825}
   - component: {fileID: 1948415824}
+  - component: {fileID: 1948415827}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -547,3 +576,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1948415827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1948415823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae127f36f0268b4e9a849cf879137bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hh: 0
+  xx: 
+  ssr: 
+  tx: 
+  txt: 
+  go: {fileID: 0}
+  test: 11
+  sl: 0
+  s2: 0
+  cc: 0
+  a: 
+  b: 0
+  c: {fileID: 0}
+  d: 
+  a2: 
+  e2: 0
+  b2: 0
+  c2: {fileID: 0}
+  d2: 
+  key: 0
+  key2: 0
+  key3: 
+  aa: 0
+  bbb: 
+  cccb: 
+  ccb: 
+  ccxcb: 

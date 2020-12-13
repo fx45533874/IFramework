@@ -10,13 +10,20 @@ using UnityEngine;
 
 namespace IFramework.Tweens
 {
-    public class QuaternionTweenValue : TweenValue<Quaternion>
+    class QuaternionTweenValue : TweenValue<Quaternion>
     {
         protected override void MoveNext()
         {
-            var point = curve.GetPercent(percent);
-            Quaternion _cur = Quaternion.Lerp(start, end, point.y);
-            cur = Quaternion.Lerp(  targetValue, _cur, percentDelta);
+            Quaternion dest = Quaternion.Lerp(start, end, convertPercent);
+            current = Quaternion.Lerp(pluginValue, dest, deltaPercent);
+        }
+        protected override Quaternion Snap(Quaternion value)
+        {
+            value.x = value.x.RoundToInt();
+            value.y = value.y.RoundToInt();
+            value.z = value.z.RoundToInt();
+            value.z = value.z.RoundToInt();
+            return value;
         }
     }
 

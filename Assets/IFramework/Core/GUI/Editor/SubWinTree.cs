@@ -422,7 +422,7 @@ namespace IFramework.GUITool
                             }
                             splitWidth += delta;
                             if (Mathf.Abs(delta) >1f)
-                                tree.Repaint();
+                                Event.current.Use();
                         }
                         break;
                     case EventType.MouseUp:
@@ -506,11 +506,7 @@ namespace IFramework.GUITool
             }
             public string userData;
             internal TreeLeaf(GUIContent title) : base() { m_minSize = new Vector2(Styles.minize, Styles.minize); this.titleContent = title; }
-            public override void CalcPosition(Rect position)
-            {
-                base.CalcPosition(position);
-                //this.m_position = position.Lerp(m_position, position, 0.04f);
-            }
+
             internal bool IsOverTitle(Vector2 vector2) { return titleRect.Contains(vector2); }
 
             public override void OnGUI()
@@ -605,7 +601,6 @@ namespace IFramework.GUITool
         public int allLeafCount { get { return allLeafs.Count; } }
         public int closedLeafCount { get { return closedLeafs.Count; } }
 
-        public event Action repaintEve;
         public event Action<Rect, SplitType> drawCursorEve;
         public event Action<TreeLeaf> onCreatLeaf;
         public event Action<TreeLeaf> onDockLeaf;
@@ -637,13 +632,7 @@ namespace IFramework.GUITool
         public readonly List<TreeLeaf> allLeafs = new List<TreeLeaf>();
         public readonly List<TreeLeaf> closedLeafs = new List<TreeLeaf>();
 
-        private void Repaint()
-        {
-            if ( repaintEve != null)
-                repaintEve();
-            if (Event.current!= null && Event.current.type != EventType.Layout && Event.current.type != EventType.Repaint)
-                Event.current.Use();
-        }
+
         private void AddCursorRect(Rect rect, SplitType splitType)
         {
             if (drawCursorEve != null)
@@ -692,7 +681,6 @@ namespace IFramework.GUITool
                 trunk.DockLeaf(leaf, dockType);
                 closedLeafs.Remove(leaf);
                 if (onDockLeaf != null) onDockLeaf(leaf);
-                //Repaint();
             }
         }
         public void CloseLeaf(TreeLeaf leaf)
@@ -738,10 +726,6 @@ namespace IFramework.GUITool
                                                             ));
             root.LegalSplit();
             root.CalcPosition(rect);
-            //if (position.size <= rect.size && Event.current.type == EventType.Layout)
-            //{
-            //    Repaint();
-            //}
         }
         private bool m_IsResizeWindow;
         public bool IsResizeWindow
@@ -805,6 +789,7 @@ namespace IFramework.GUITool
                         }
                         dragleaf = null;
                         selectionRect = Rect.zero;
+                        Event.current.Use();
                     }
                     break;
                 case EventType.Repaint:
@@ -861,7 +846,7 @@ namespace IFramework.GUITool
                         {
                             selectionRect = Rect.zero;
                         }
-                        Repaint();
+                        Event.current.Use();
                     }
                     break;
             }

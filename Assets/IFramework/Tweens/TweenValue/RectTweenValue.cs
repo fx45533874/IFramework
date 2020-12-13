@@ -10,16 +10,21 @@ using UnityEngine;
 
 namespace IFramework.Tweens
 {
-    public class RectTweenValue : TweenValue<Rect>
+    class RectTweenValue : TweenValue<Rect>
     {
         protected override void MoveNext()
         {
-            var point = curve.GetPercent(percent);
-
-            Rect _cur = start.Lerp(start, end, point.y);
-            cur = start.Lerp(  targetValue, _cur, percentDelta);
+            Rect dest = start.Lerp(start, end, convertPercent);
+            current = start.Lerp(pluginValue, dest, deltaPercent);
         }
-
+        protected override Rect Snap(Rect value)
+        {
+            value.x = value.x.RoundToInt();
+            value.y = value.y.RoundToInt();
+            value.width = value.width.RoundToInt();
+            value.height = value.height.RoundToInt();
+            return value;
+        }
     }
 
 }

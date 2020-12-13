@@ -10,13 +10,20 @@ using UnityEngine;
 
 namespace IFramework.Tweens
 {
-    public class ColorTweenValue : TweenValue<Color>
+    class ColorTweenValue : TweenValue<Color>
     {
         protected override void MoveNext()
         {
-            var point = curve.GetPercent(percent);
-            Color _cur = Color.Lerp(start, end, point.y);
-            cur = Color.Lerp(targetValue, _cur, percentDelta);
+            Color dest = Color.Lerp(start, end, convertPercent);
+            current = Color.Lerp(pluginValue, dest, deltaPercent);
+        }
+        protected override Color Snap(Color value)
+        {
+            value.a = value.a.RoundToInt();
+            value.r = value.r.RoundToInt();
+            value.g = value.g.RoundToInt();
+            value.b = value.b.RoundToInt();
+            return value;
         }
     }
 

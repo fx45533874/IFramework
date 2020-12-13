@@ -18,7 +18,7 @@ namespace IFramework.GUITool
         public class MenuTrunk
         {
             public string name { get; private set; }
-            public float height = 25;
+            public float height = 30;
             public bool isOn;
 
             public virtual int depth { get { return parent.depth + 1; } }
@@ -74,26 +74,47 @@ namespace IFramework.GUITool
             }
             private void SelfGUI(Rect rect)
             {
-                GUI.Box(rect, "", "RL Background");
-                if (tree.current == this) GUI.Box(rect, "", "SelectionRect");
-                var r = rect.Zoom(AnchorType.MiddleRight, new Vector2(-depth * 10, 0));
+                if (Event.current.type== EventType.Repaint)
+                {
+                    GUIStyles.Get("ObjectPickerResultsOdd").Draw(rect, false, false, tree.current == this, false);
+                    GUIStyles.Get("IN Title").Draw(rect, false, false, false, false);
+                }
+
+                Event e = Event.current;
+                var _r = rect.Zoom(AnchorType.MiddleRight, new Vector2(-50, 0));
+
+                switch (e.type)
+                {
+                    case EventType.MouseDown:
+                        if (_r.Contains(e.mousePosition) && e.clickCount == 1)
+                        {
+                            trySelect = true;
+                        }
+                        break;
+                    case EventType.MouseUp:
+                        if (_r.Contains(e.mousePosition) && e.clickCount == 1 && trySelect)
+                        {
+                            tree.current = this;
+                            e.Use();
+                        }
+                        trySelect = false;
+                        break;
+                }
+
+                var r = rect.Zoom(AnchorType.MiddleRight, new Vector2(-depth * 10, -15));
                 if (childs == null || childs.Count == 0)
                     GUI.Label(r, name);
                 else
                 {
                     GUI.Box(r, "", "IN MinMaxStateDropDown");
-                    isOn = EditorGUI.Foldout(r, isOn, name, false);
-                }
-  
+                    var rs = r.VerticalSplit(15);
 
-                if (rect.Zoom(AnchorType.MiddleRight, new Vector2(-50, 0)).Contains(Event.current.mousePosition) && Event.current.clickCount == 1)
-                {
-                    if (tree.current != this)
-                    {
-                        tree.current = this;
-                    }
+                    isOn = EditorGUI.Foldout(rs[0],isOn, "");
+                    GUI.Label(rs[1],name);
                 }
             }
+            bool trySelect;
+
             protected void DrawChild(Rect rect, int index)
             {
                 if (index >= childs.Count) return;
@@ -129,12 +150,7 @@ namespace IFramework.GUITool
                     _current = value;
                     if (_current != null && onCurrentChange != null)
                     {
-
                         onCurrentChange(_current.path.Substring(_root.path.Length + 1));
-                        if (EditorWindow.focusedWindow!=null)
-                        {
-                            EditorWindow.focusedWindow.Repaint();
-                        }
                     }
                 }
             }
@@ -235,6 +251,7 @@ namespace IFramework.GUITool
             if (r.height > 0 && r.Contains(e.mousePosition) && e.type == EventType.MouseUp)
             {
                 current = null;
+                e.Use();
             }
         }
 

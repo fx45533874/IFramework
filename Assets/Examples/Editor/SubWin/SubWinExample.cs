@@ -61,7 +61,7 @@ namespace IFramework_Demo
         private void Init()
         {
             WinTree = new SubWinTree();
-            WinTree.repaintEve += Repaint;
+
             WinTree.drawCursorEve += (rect, sp) =>
             {
                 if (sp == SplitType.Vertical)
@@ -204,7 +204,7 @@ namespace IFramework_Demo
             var rs = localPosition.Zoom(AnchorType.MiddleCenter, -2).HorizontalSplit(ToolBarHeight, 4);
             DrawWindows(rs[1]);
             DrawToolBar(rs[0]);
-            Repaint();
+            //Repaint();
         }
 
         private void DrawToolBar(Rect rect)

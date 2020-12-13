@@ -864,9 +864,10 @@ namespace IFramework
             class UploadGUI
             {
                 private PkgKitTool.UploadInfo _upload = new PkgKitTool.UploadInfo();
-
+                private Vector2 scroll;
                 public void OnGUI()
                 {
+                    scroll= GUILayout.BeginScrollView(scroll);
                     EditorGUILayout.LabelField("Author", PkgKitTool.userjson.name);
                     _upload.name = EditorGUILayout.TextField("Name", _upload.name);
                     _upload.preview = EditorGUILayout.Toggle("Preview", _upload.preview);
@@ -924,6 +925,43 @@ namespace IFramework
 
                     {
                         GUILayout.BeginHorizontal();
+                        using (new EditorGUI.DisabledScope(string.IsNullOrEmpty(GUIUtility.systemCopyBuffer)))
+                        {
+                            if (GUILayout.Button("Paste", GUILayout.Width(Contents.gap * 5)))
+                            {
+                                try
+                                {
+                                    var p = JsonUtility.FromJson<PkgKitTool.Constant.PackageInfosModel>(GUIUtility.systemCopyBuffer);
+                                    _upload.describtion = p.versions.Last().describtion;
+                                    var dps = p.versions.Last().dependences.Split('@');
+                                    _upload.dependences = dps;
+                                    _upload.name = p.name;
+                                    _upload.preview = p.versions.Last().preview;
+                                    _upload.assetPath = p.versions.Last().assetPath;
+                                    var vs = p.versions.Last().version.Split('.');
+                                    for (int i = 0; i < _upload.version.Length; i++)
+                                    {
+                                        _upload.version[i] = int.Parse(vs[i]);
+                                        if (i== _upload.version.Length-1)
+                                        {
+                                            _upload.version[i]++;
+                                        }
+                                    }
+                                    for (int i = _upload.version.Length-1; i >0; i--)
+                                    {
+                                        if (_upload.version[i]>=100)
+                                        {
+                                            _upload.version[i] = 1;
+                                            _upload.version[i - 1]++;
+                                        }
+                                    }
+                                    GUI.FocusControl("");
+                                }
+                                catch (Exception) { }
+
+                            }
+                        }
+
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button(Contents.go, GUILayout.Width(Contents.gap * 5)))
                         {
@@ -931,6 +969,7 @@ namespace IFramework
                         }
                         GUILayout.EndHorizontal();
                     }
+                    GUILayout.EndScrollView();
                 }
             }
             class MemoryGUI
@@ -1183,6 +1222,7 @@ namespace IFramework
                     menu.AddItem(new GUIContent("Copy/AssetPath"), false, () => { GUIUtility.systemCopyBuffer = p.versions[index].assetPath; });
                     menu.AddItem(new GUIContent("Copy/Dependences"), false, () => { GUIUtility.systemCopyBuffer = p.versions[index].dependences; });
                     menu.AddItem(new GUIContent("Copy/Describtion"), false, () => { GUIUtility.systemCopyBuffer = p.versions[index].describtion; });
+                    menu.AddItem(new GUIContent("Copy/All"), false, () => { GUIUtility.systemCopyBuffer = JsonUtility.ToJson(p,true); });
 
                     menu.ShowAsContext();
                     if (e.type!= EventType.Layout && e.type!= EventType.Repaint)
@@ -1255,9 +1295,12 @@ namespace IFramework
                     if (e.button == 0 && e.clickCount == 1 && _table.rows[index].position.Contains(e.mousePosition))
                     {
                         _table.SelectRow(index);
-                        _window.Repaint();
+                        if (e.type!= EventType.Layout)
+                        {
+                            e.Use();
+                        }
                     }
-                    if (window.type.Namespace.Contains("UnityEditor"))
+                    if (!string.IsNullOrEmpty(window.type.Namespace) && window.type.Namespace.Contains("UnityEditor"))
                         this.Label(_table.rows[index][name].position, new GUIContent(window.searchName, tx));
                     else
                         this.Label(_table.rows[index][name].position, window.searchName);

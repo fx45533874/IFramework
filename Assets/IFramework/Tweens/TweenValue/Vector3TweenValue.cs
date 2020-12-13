@@ -10,13 +10,19 @@ using UnityEngine;
 
 namespace IFramework.Tweens
 {
-    public class Vector3TweenValue : TweenValue<Vector3>
+    class Vector3TweenValue : TweenValue<Vector3>
     {
         protected override void MoveNext()
         {
-            var point = curve.GetPercent(percent);
-            Vector3 _cur = Vector3.Lerp(start, end, point.y);
-            cur = Vector3.Lerp(targetValue, _cur, percentDelta);
+            Vector3 dest = Vector3.Lerp(start, end, convertPercent);
+            current = Vector3.Lerp(pluginValue, dest, deltaPercent);
+        }
+        protected override Vector3 Snap(Vector3 value)
+        {
+            value.x = value.x.RoundToInt();
+            value.y = value.y.RoundToInt();
+            value.z = value.z.RoundToInt();
+            return value;
         }
     }
 

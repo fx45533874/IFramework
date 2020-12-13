@@ -220,7 +220,6 @@ namespace IFramework.Language
         private void SubwinInit()
         {
             sunwin = new SubWinTree();
-            sunwin.repaintEve += Repaint;
             sunwin.drawCursorEve += (rect, sp) =>
             {
                 if (sp == SplitType.Vertical)
@@ -582,7 +581,7 @@ namespace IFramework.Language
                                             SearchablePopup.Show(pos, window._keys.ToArray(), index, (i, str) =>
                                             {
                                                 tmpLanPair.key = str;
-                                                window.Repaint();
+                                                //window.Repaint();
                                             });
                                         }
                                     }
@@ -763,26 +762,25 @@ namespace IFramework.Language
 
                     for (int i = _table.firstVisibleRow; i < _table.lastVisibleRow + 1; i++)
                     {
-                        if (e.modifiers == EventModifiers.Control &&
-                               e.button == 0 && e.clickCount == 1 &&
-                               _table.rows[i].position.Contains(e.mousePosition))
+
+
+                        if (e.button==0 && e.clickCount==1 && e.type==  EventType.MouseUp && _table.rows[i].position.Contains(e.mousePosition))
                         {
-                            _table.ControlSelectRow(i);
-                            window.Repaint();
-                        }
-                        else if (e.modifiers == EventModifiers.Shift &&
-                                        e.button == 0 && e.clickCount == 1 &&
-                                        _table.rows[i].position.Contains(e.mousePosition))
-                        {
-                            _table.ShiftSelectRow(i);
-                            window.Repaint();
-                        }
-                        else if (e.button == 0 && e.clickCount == 1 &&
-                                        _table.rows[i].position.Contains(e.mousePosition)
-                                      /*  && ListView.viewPosition.Contains(Event.current.mousePosition) */)
-                        {
-                            _table.SelectRow(i);
-                            window.Repaint();
+                            switch (e.modifiers)
+                            {
+                                case EventModifiers.None:
+                                     _table.SelectRow(i);
+                                    e.Use();
+                                    break;
+                                case EventModifiers.Shift:
+                                    _table.ShiftSelectRow(i);
+                                    e.Use();
+                                    break;
+                                case EventModifiers.Control:
+                                    _table.ControlSelectRow(i);
+                                    e.Use();
+                                    break;
+                            }
                         }
                         if (e.button == 0 && e.clickCount == 1 &&
               (!_table.view.Contains(e.mousePosition) ||
@@ -790,15 +788,18 @@ namespace IFramework.Language
                    !_table.content.Contains(e.mousePosition))))
                         {
                             _table.SelectNone();
-                            window.Repaint();
+                            if (Event.current.type != EventType.Layout)
+                            {
+                                e.Use();
+                            }
                         }
 
-                        if (e.button == 1 && e.clickCount == 1 &&
+                        if (e.button == 1 && e.clickCount == 1 && e.type== EventType.MouseUp &&
                         _table.content.Contains(e.mousePosition))
                         {
                             GenericMenu menu = new GenericMenu();
                             menu.AddItem(new GUIContent("Delete"), false, () => {
-                                if (EditorUtility.DisplayDialog("Make Sure", string.Format("Really want delete {0} pairs", _table.rows.Count), "yes", "no"))
+                                if (EditorUtility.DisplayDialog("Make Sure", string.Format("Really want delete {0} pairs", _table.selectedRows.Count), "yes", "no"))
                                 {
                                     for (int j = _table.rows.Count - 1; j >= 0; j--)
                                     {
@@ -810,8 +811,7 @@ namespace IFramework.Language
                             });
 
                             menu.ShowAsContext();
-                            if (e.type != EventType.Layout)
-                                e.Use();
+                            e.Use();
 
                         }
 

@@ -89,10 +89,12 @@ namespace IFramework.GUITool
                                 break;
                         }
                         split = Mathf.Clamp(split, minSize, splitType== SplitType.Vertical? position.width - minSize: position.height - minSize);
-                        if (EditorWindow.focusedWindow != null)
-                        {
-                            EditorWindow.focusedWindow.Repaint();
-                        }
+
+                        e.Use();
+                        //if (EditorWindow.focusedWindow != null)
+                        //{
+                        //    EditorWindow.focusedWindow.Repaint();
+                        //}
                     }
                     break;
                 case EventType.MouseUp:
