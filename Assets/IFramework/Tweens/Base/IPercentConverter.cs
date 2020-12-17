@@ -9,10 +9,9 @@
 
 namespace IFramework.Tweens
 {
-    public interface IPercentConverter
+    public interface IPercentConverter:IRecyclable
     {
         float Convert(float percent, float time, float duration);
-        void Recyle();
     }
     public interface IPercentConverter<T> : IPercentConverter
     {

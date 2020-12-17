@@ -31,7 +31,7 @@ namespace IFramework.Tweens
 
         public static float delta = 0.618f;
         public static float deltaTime = 0.02f;
-        public static float speed = 1;
+        public static float timeScale = 1;
         private static Dictionary<Type, Type> map = new Dictionary<Type, Type>()
         {
             {typeof(bool),typeof(BoolTweenValue) },
@@ -81,7 +81,7 @@ namespace IFramework.Tweens
         private void LoopEvent()
         {
             if (recyled) return;
-            _time += deltaTime * speed;
+            _time += deltaTime * timeScale;
             MoveNext();
         }
         private void OnCompelete()

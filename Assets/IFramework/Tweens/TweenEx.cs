@@ -75,9 +75,9 @@ namespace IFramework.Tweens
             TweenValue.delta = delta;
             return tween;
         }
-        public static ITween SetSpeed(this ITween tween, float speed)
+        public static ITween SetTimeScale(this ITween tween, float speed)
         {
-            TweenValue.speed = speed;
+            TweenValue.timeScale = speed;
             return tween;
         }
 
