@@ -1129,6 +1129,7 @@ namespace IFramework
             private SystemGUI _sys = new SystemGUI();
             public void OnGUI(Rect position)
             {
+                menu.Fitter(_window.search);
                 _split.OnGUI(position);
             }
         }
@@ -1236,6 +1237,7 @@ namespace IFramework
             private SplitView _split = new SplitView();
             public void OnGUI(Rect position)
             {
+                menu.Fitter(_window.search);
                 _split.OnGUI(position);
             }
         }
@@ -1249,8 +1251,7 @@ namespace IFramework
             public const float lineHeight = 20f;
             public static Texture tx = EditorGUIUtility.IconContent("BuildSettings.Editor.Small").image;
 
-            private string _search = "";
-            private SearchField _sear;
+
 
             private TableViewCalculator _table = new TableViewCalculator();
             private Vector2 _scroll;
@@ -1262,26 +1263,17 @@ namespace IFramework
                     width=200
                 },
             };
-            public WindowCollection()
-            {
-                _sear = new SearchField("", null, 0);
-                _sear.onValueChange += (str) => { _search = str; };
-            }
+
             public void OnGUI(Rect position)
             {
                 GUI.BeginClip(position);
-                var rs = new Rect(position.x, 0, position.width - 20, position.height).HorizontalSplit(position.height - 2 * lineHeight);
+                var rs = new Rect(position.x, -lineHeight/3, position.width - 20, position.height).HorizontalSplit(position.height - 2 * lineHeight);
 
-                var fitterWindows = EditorWindowTool.windows.FindAll((w) => { return w.searchName.ToLower().Contains(_search); }).ToArray();
+                var fitterWindows = EditorWindowTool.windows.FindAll((w) => { return w.searchName.ToLower().Contains(_window.search); }).ToArray();
                 _table.Calc(rs[0], new Vector2(0, lineHeight), _scroll, lineHeight, fitterWindows.Length, setting);
 
                 Event e = Event.current;
 
-                this.LabelField(_table.titleRow.position, "", Styles.titlestyle)
-                    .Pan(() =>
-                    {
-                        _sear.OnGUI(_table.titleRow[name].position);
-                    });
                 _scroll = GUI.BeginScrollView(_table.view, _scroll, _table.content);
                 for (int i = _table.firstVisibleRow; i < _table.lastVisibleRow + 1; i++)
                 {
@@ -1399,7 +1391,7 @@ namespace IFramework
                 public string token;
             }
             public List<PkgKitTool.Constant.PackageInfosModel> pkgInfos = new List<PkgKitTool.Constant.PackageInfosModel>();
-            public UserJson userJson;
+            public UserJson userJson=new UserJson();
             public bool login
             {
                 get
@@ -1440,6 +1432,7 @@ namespace IFramework
         private void OnEnable()
         {
             _window = this;
+            __windowType= EditorTools.Prefs.GetObject<RootWindow, WindowType>("__windowType");
             if (_windowInfo == null)
             {
                 _windowInfo = new PkgkitInfo();
@@ -1450,13 +1443,16 @@ namespace IFramework
             _toolBarTree = new ToolBarTree();
             PkgKitTool.Init();
             _toolBarTree.Popup((value) => { _windowType = (WindowType)value; }, typeof(WindowType).GetEnumNames(), (int)_windowType)
-                .Button(Contents.refresh, (r) => {
-                    PkgKitTool.FreshWebPackages();
-                }, 20)
+                //.Button(Contents.refresh, (r) => {
+                //    PkgKitTool.FreshWebPackages();
+                //}, 20)
+                .Space(20)
+                .Label(new GUIContent(PkgKitTool.userjson.name), 100, () => { return PkgKitTool.login; })
                 .FlexibleSpace()
-                .Label(new GUIContent(PkgKitTool.userjson.name), 100, () => { return PkgKitTool.login; });
-            __windowType= EditorTools.Prefs.GetObject<RootWindow, WindowType>("__windowType");
+                .SearchField((value)=> { search = value; },search,200)
+                ;
         }
+        private string search="";
         private void OnDisable()
         {
             EditorTools.Prefs.SetObject<RootWindow,WindowType>("__windowType",  __windowType);

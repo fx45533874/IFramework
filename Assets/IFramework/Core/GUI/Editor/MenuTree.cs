@@ -18,8 +18,27 @@ namespace IFramework.GUITool
         public class MenuTrunk
         {
             public string name { get; private set; }
-            public float height = 30;
+            public float height { get {return  fit ? 30 : 0; } }
             public bool isOn;
+            private bool __fit=true;
+            public bool fit
+            {
+                get
+                {
+                    for (int i = 0; i < childs.Count; i++)
+                    {
+                        if (childs[i].fit)
+                        {
+                            return true;
+                        }
+                    }
+                    return __fit;
+                }
+            }
+
+
+
+
 
             public virtual int depth { get { return parent.depth + 1; } }
             public MenuTrunk parent { get; private set; }
@@ -60,6 +79,7 @@ namespace IFramework.GUITool
 
             public virtual void OnGUI(Rect rect)
             {
+                if (!fit) return;
                 if (childs == null || childs.Count == 0 || !isOn)
                 {
                     SelfGUI(rect);
@@ -122,12 +142,37 @@ namespace IFramework.GUITool
                 childs[index].OnGUI(rs[0]);
                 DrawChild(rs[1], ++index);
             }
+
+
+            public void Fitter(string fit)
+            {
+                if (string.IsNullOrEmpty(fit))
+                {
+                    __fit = true;
+                }
+                else
+                {
+                    if (name.ToLower().Contains(fit.ToLower()))
+                    {
+                        __fit = true;
+                    }
+                    else
+                    {
+                        __fit = false;
+                    }
+                }
+                for (int i = 0; i < childs.Count; i++)
+                {
+                    childs[i].Fitter(fit);
+                }
+
+            }
         }
         public class MenuRoot : MenuTrunk
         {
             public override int depth { get { return 0; } }
             public MenuRoot(string name, MenuTrunk parent, MenuTree tree):base(name,parent,tree)
-            {  height = 0; }
+            {   }
             public override void OnGUI(Rect rect)
             {
                 if (childs != null && childs.Count > 0)
@@ -212,7 +257,17 @@ namespace IFramework.GUITool
         {
             return _nodes.Find((_node) => { return path == _node.path; });
         }
-       
+        private string lastfit;
+
+        public void Fitter(string fit)
+        {
+            if (fit!=lastfit)
+            {
+                _root.Fitter(fit);
+                lastfit = fit;
+            }
+        }
+
         private string ToString(string[] strs, int count)
         {
             string tmp = "";
